@@ -3,10 +3,13 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Quiz from '../components/Quiz.astro';
 import LeadForm from '../components/LeadForm.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { liveProjects } from '../projects';
 import { site, team, regions } from '../site';
 import { homeSteps } from '../quizzes';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projects = await liveProjects();
 const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
 ---
 <Base title="Buy or sell a home in the GTA and Ontario" description="Tell Team Jabbar what you need in four quick questions. A licensed agent calls you with homes that fit, or a free evaluation of your home.">
@@ -66,6 +69,27 @@ const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
       </div>
     </div>
   </section>
+
+  {projects.length > 0 && (
+    <section class="band band-pale" id="projects">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>Upcoming communities and projects</h2>
+            <p class="lede">New condos, townhomes and developments across Ontario. Ask us for floor plans and prices.</p>
+          </div>
+          <div class="rail-nav">
+            <button type="button" id="rail-prev" aria-label="Previous projects"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <button type="button" id="rail-next" aria-label="Next projects"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+        <ul class="rail" id="rail" tabindex="0" aria-label="Upcoming projects">
+          {projects.map((p) => <li><ProjectCard project={p} /></li>)}
+        </ul>
+        <div class="actions"><a class="btn btn-line" href="/pre-construction/">See all projects</a></div>
+      </div>
+    </section>
+  )}
 
   <section class="band band-dark" id="budget">
     <div class="wrap">
@@ -190,6 +214,20 @@ const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
       };
       ['x-price', 'x-down', 'x-rate'].forEach((id) => $(id).addEventListener('input', run));
       run();
+
+      const rail = $('rail');
+      if (rail) {
+        const prev = $('rail-prev'), next = $('rail-next');
+        const move = (dir) => rail.scrollBy({ left: dir * rail.clientWidth, behavior: 'smooth' });
+        const state = () => {
+          prev.disabled = rail.scrollLeft < 8;
+          next.disabled = rail.scrollLeft + rail.clientWidth > rail.scrollWidth - 8;
+        };
+        prev.addEventListener('click', () => move(-1));
+        next.addEventListener('click', () => move(1));
+        rail.addEventListener('scroll', state, { passive: true });
+        state();
+      }
 
       const chips = [...document.querySelectorAll('[data-filter]')];
       chips.forEach((chip) => chip.addEventListener('click', () => {

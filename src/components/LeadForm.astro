@@ -6,13 +6,15 @@ interface Props {
   heading: string;
   button: string;
   success: string;
+  project?: string;
 }
-const { type, heading, button, success } = Astro.props;
+const { type, heading, button, success, project } = Astro.props;
 const id = `f-${type}`;
 ---
 <form class="form" data-lead data-success={success} data-phone={site.phone} novalidate={false}>
   <h3>{heading}</h3>
   <input type="hidden" name="type" value={type} />
+  {project && <input type="hidden" name="project" value={project} />}
   <div class="hp" aria-hidden="true">
     <label>Leave this empty <input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
   </div>
@@ -81,7 +83,7 @@ const id = `f-${type}`;
     </>
   )}
 
-  {type === 'preconstruction' && (
+  {type === 'preconstruction' && !project && (
     <div class="field">
       <label for={`${id}-interest`}>What are you looking for?</label>
       <select id={`${id}-interest`} name="home_type">

@@ -14,4 +14,26 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  schema: z.object({
+    name: z.string(),
+    builder: z.string(),
+    city: z.string(),
+    area: z.string().optional(), // neighbourhood or intersection
+    homeTypes: z.array(z.enum(['Condo', 'Townhouse', 'Semi-detached', 'Detached'])),
+    status: z.enum(['Coming soon', 'Now selling', 'Under construction']),
+    priceFrom: z.string().optional(), // e.g. "$500s"
+    occupancy: z.string().optional(), // e.g. "2029"
+    deposit: z.string().optional(),
+    summary: z.string(),
+    highlights: z.array(z.string()).default([]),
+    image: z.string().optional(), // file in /public/images/projects/
+    imageCredit: z.string().optional(),
+    updated: z.coerce.date(),
+    // true = hidden from the live site
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { blog, projects };

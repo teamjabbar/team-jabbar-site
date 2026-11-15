@@ -33,6 +33,7 @@ const DETAILS = {
   size: 'home_size',
   condition: 'home_condition',
   also_buying: 'also_buying',
+  project: 'project_interest',
   source: 'lead_source',
   message: 'message',
 };

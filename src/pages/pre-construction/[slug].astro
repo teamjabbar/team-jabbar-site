@@ -1,0 +1,79 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { liveProjects } from '../../projects';
+import { site } from '../../site';
+
+export async function getStaticPaths() {
+  const projects = await liveProjects();
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+const { project } = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+const where = d.area ? `${d.area}, ${d.city}` : d.city;
+const mono = d.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+const others = (await liveProjects()).filter((p) => p.id !== project.id).slice(0, 3);
+const updated = d.updated.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+<Base title={`${d.name} by ${d.builder}, ${d.city}`} description={d.summary}>
+  <section class="page-head" style="padding-block:2rem 2.25rem">
+    <div class="wrap">
+      <p class="meta"><a href="/pre-construction/">Pre-construction</a> / {d.city}</p>
+      <h1 style="margin-top:0.3em;font-size:clamp(2rem,4.5vw,3.2rem)">{d.name}</h1>
+      <p class="lede">{where} · by {d.builder} · {d.status}</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap article-grid">
+      <div>
+        <div class="project-pic project-hero">
+          {d.image ? <img src={d.image} alt={`${d.name} by ${d.builder}`} /> : <span class="mono" aria-hidden="true">{mono}</span>}
+        </div>
+        {d.imageCredit && <p class="fine" style="margin-top:-1.4rem">Image: {d.imageCredit}</p>}
+
+        <p class="lede" style="color:var(--ink)">{d.summary}</p>
+
+        <table class="fact-table"><tbody>
+          <tr><th>Builder</th><td>{d.builder}</td></tr>
+          <tr><th>Location</th><td>{where}</td></tr>
+          <tr><th>Home types</th><td>{d.homeTypes.join(', ')}</td></tr>
+          <tr><th>Status</th><td>{d.status}</td></tr>
+          {d.priceFrom && <tr><th>Prices</th><td>From the {d.priceFrom}</td></tr>}
+          {d.occupancy && <tr><th>Occupancy</th><td>{d.occupancy}</td></tr>}
+          {d.deposit && <tr><th>Deposit</th><td>{d.deposit}</td></tr>}
+        </tbody></table>
+
+        {d.highlights.length > 0 && (
+          <div class="prose">
+            <h2 style="margin-top:0">Highlights</h2>
+            <ul>{d.highlights.map((h) => <li>{h}</li>)}</ul>
+          </div>
+        )}
+        <div class="prose"><Content /></div>
+
+        <p class="fine" style="margin-top:2rem">
+          Details last checked {updated}. Prices, plans, deposits and dates are set by the builder and can change without
+          notice. E. &amp; O.E. {site.name}, {site.brokerage.name}, is not the builder of this project.
+        </p>
+      </div>
+
+      <aside class="article-side" id="start">
+        <LeadForm type="preconstruction" project={d.name} heading={`Get floor plans and prices for ${d.name}`} button="Send me the details" success="Request received. We'll get back to you with the details." />
+        <p class="fine" style="margin-top:1rem;text-align:center">Or call or text <a href={site.phoneHref}>{site.phone}</a></p>
+      </aside>
+    </div>
+  </section>
+
+  {others.length > 0 && (
+    <section class="band band-pale">
+      <div class="wrap">
+        <div class="section-head"><h2>More upcoming projects</h2><a class="btn btn-line" href="/pre-construction/">See all projects</a></div>
+        <ul class="project-grid">{others.map((p) => <li><ProjectCard project={p} /></li>)}</ul>
+      </div>
+    </section>
+  )}
+</Base>

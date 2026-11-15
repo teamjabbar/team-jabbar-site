@@ -18,3 +18,10 @@ Astro site for teamjabbar.com, hosted on Cloudflare Pages.
 ## Run locally
     npm install
     npm run dev
+
+## Adding a pre-construction project
+Add one file per project in `src/content/projects/` (copy a `sample-project-*.md` file). Put the image in
+`public/images/projects/` and set `image: /images/projects/your-file.jpg`. Set `draft: false` to publish.
+The homepage section and the directory appear automatically once at least one project is published.
+Only add projects the builder has authorized the team to market, and keep the builder's name on the page.
+To preview drafts locally: `SHOW_DRAFTS=1 npm run build && npm run preview`.

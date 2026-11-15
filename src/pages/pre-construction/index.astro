@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { liveProjects } from '../../projects';
+
+const projects = await liveProjects();
+const cities = [...new Set(projects.map((p) => p.data.city))].sort();
+const types = [...new Set(projects.flatMap((p) => p.data.homeTypes))];
+---
+<Base title="Pre-construction condos and new developments in Ontario" description="Upcoming condo, townhouse and housing developments across the GTA and Ontario. Get floor plans and price lists from Team Jabbar before the public launch.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>New projects, before the public launch</h1>
+      <p class="lede">Upcoming communities across the GTA and Ontario. Ask us for floor plans, prices and deposit terms.</p>
+    </div>
+  </section>
+
+  {projects.length > 0 && (
+    <section class="band band-pale" id="projects">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Upcoming projects</h2>
+          <div class="filter" role="group" aria-label="Filter projects">
+            <select id="f-city" aria-label="City" class="chip">
+              <option value="">All cities</option>
+              {cities.map((c) => <option>{c}</option>)}
+            </select>
+            <select id="f-type" aria-label="Home type" class="chip">
+              <option value="">All home types</option>
+              {types.map((t) => <option>{t}</option>)}
+            </select>
+          </div>
+        </div>
+        <ul class="project-grid" id="project-grid">
+          {projects.map((p) => <li><ProjectCard project={p} /></li>)}
+        </ul>
+        <p id="no-match" hidden style="margin-top:1.5rem">No projects match those filters yet. Join the list and we will email you when one does.</p>
+      </div>
+    </section>
+  )}
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <h2>How pre-construction works</h2>
+        <ol class="steps" style="grid-template-columns:1fr">
+          <li><h3>Join the list</h3><p>Tell us what kind of home or investment you want.</p></li>
+          <li><h3>Get projects by email</h3><p>When a builder releases a project that fits, we email you the floor plans, prices and deposit structure.</p></li>
+          <li><h3>Reserve through us</h3><p>If you like one, we submit your worksheet to the builder and walk you through the agreement.</p></li>
+          <li><h3>Review before you commit</h3><p>New condo purchases in Ontario come with a 10-day cooling-off period. Use it to have a lawyer review the agreement.</p></li>
+        </ol>
+        <p style="margin-top:2rem">Read <a href="/blog/buying-a-condo-what-to-check/">what to check before you buy a condo</a>.</p>
+      </div>
+      <LeadForm type="preconstruction" heading="Join the pre-construction list" button="Add me to the list" success="You're on the list. We'll email you when a matching project comes in." />
+    </div>
+  </section>
+
+  <script is:inline>
+    (() => {
+      const city = document.getElementById('f-city'), type = document.getElementById('f-type');
+      if (!city) return;
+      const apply = () => {
+        let shown = 0;
+        document.querySelectorAll('#project-grid > li').forEach((li) => {
+          const card = li.firstElementChild;
+          const ok = (!city.value || card.dataset.city === city.value) && (!type.value || card.dataset.types.split('|').includes(type.value));
+          li.hidden = !ok;
+          if (ok) shown++;
+        });
+        document.getElementById('no-match').hidden = shown > 0;
+      };
+      city.addEventListener('change', apply);
+      type.addEventListener('change', apply);
+    })();
+  </script>
+</Base>
