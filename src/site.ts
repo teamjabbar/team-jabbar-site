@@ -59,7 +59,7 @@ export const nav = [
   { href: '/sell/', label: 'Sell' },
   { href: '/pre-construction/', label: 'Pre-construction' },
   { href: '/listings/', label: 'Listings' },
+  { href: '/blog/', label: 'Blog' },
   { href: '/tools/', label: 'Tools' },
   { href: '/about/', label: 'About' },
-  { href: '/contact/', label: 'Contact' },
 ];

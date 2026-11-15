@@ -2,8 +2,8 @@
 import '../styles/global.css';
 import { site, nav } from '../site';
 
-interface Props { title: string; description: string; }
-const { title, description } = Astro.props;
+interface Props { title: string; description: string; article?: boolean; }
+const { title, description, article = false } = Astro.props;
 const path = Astro.url.pathname;
 const fullTitle = `${title} | ${site.name}`;
 const canonical = new URL(path, site.url).href;
@@ -38,14 +38,15 @@ const schema = {
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:url" content={canonical} />
     <meta name="theme-color" content="#000000" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <slot name="head" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -56,7 +57,7 @@ const schema = {
         <nav class="site-nav" id="site-nav" aria-label="Main">
           <ul>
             {nav.map((n) => (
-              <li><a href={n.href} aria-current={path === n.href ? 'page' : undefined}>{n.label}</a></li>
+              <li><a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a></li>
             ))}
             <li><a class="call" href={site.phoneHref}>Call {site.phone}</a></li>
           </ul>
@@ -92,6 +93,7 @@ const schema = {
             <ul>
               <li><a href="/home-evaluation/">Free home evaluation</a></li>
               {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+              <li><a href="/contact/">Contact</a></li>
               <li><a href="/privacy/">Privacy policy</a></li>
               <li><a href="https://www.reco.on.ca/reco-information-guide" rel="noopener">RECO Information Guide</a></li>
             </ul>
@@ -114,16 +116,50 @@ const schema = {
       </div>
     </footer>
 
+    <div class="dock" id="dock">
+      <a class="btn btn-line" href={site.phoneHref}>Call</a>
+      <a class="btn btn-gold" href="/#start" id="dock-start">Get started</a>
+    </div>
+
     <script is:inline>
       (() => {
-        const btn = document.querySelector('.nav-toggle');
+        const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+        // Menu
+        const toggle = document.querySelector('.nav-toggle');
         const nav = document.getElementById('site-nav');
-        btn?.addEventListener('click', () => {
+        toggle?.addEventListener('click', () => {
           const open = nav.classList.toggle('open');
-          btn.setAttribute('aria-expanded', String(open));
+          toggle.setAttribute('aria-expanded', String(open));
         });
 
-        document.querySelectorAll('form[data-lead]').forEach((form) => {
+        // Phone dock: point at this page's form if it has one, and stay out of its way
+        const dock = document.getElementById('dock');
+        const start = document.getElementById('start');
+        if (start) document.getElementById('dock-start').setAttribute('href', '#start');
+        const dockState = () => {
+          let show = window.scrollY > 300;
+          if (start) {
+            const r = start.getBoundingClientRect();
+            if (r.top < window.innerHeight && r.bottom > 0) show = false;
+          }
+          dock.classList.toggle('show', show);
+        };
+        window.addEventListener('scroll', dockState, { passive: true });
+        dockState();
+
+        const send = async (form) => {
+          const res = await fetch('/api/lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...Object.fromEntries(new FormData(form)), source: location.pathname }),
+          });
+          if (!res.ok) throw new Error();
+        };
+        const failed = (form) => "This didn't send. Call or text us at " + form.dataset.phone + ' and we will take it from there.';
+
+        // Single-step forms
+        $$('form[data-lead]').forEach((form) => {
           const status = form.querySelector('.form-status');
           const button = form.querySelector('button[type=submit]');
           const label = button.textContent;
@@ -134,21 +170,123 @@ const schema = {
             button.disabled = true;
             button.textContent = 'Sending';
             try {
-              const res = await fetch('/api/lead', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(Object.fromEntries(new FormData(form))),
-              });
-              if (!res.ok) throw new Error();
+              await send(form);
               form.reset();
               status.textContent = form.dataset.success;
             } catch {
               status.dataset.state = 'error';
-              status.textContent = "This didn't send. Call or text us at " + form.dataset.phone + ' and we will take it from there.';
+              status.textContent = failed(form);
             }
             button.disabled = false;
             button.textContent = label;
           });
+        });
+
+        // Multi-step forms
+        $$('form[data-quiz]').forEach((form) => {
+          const steps = $$('[data-step]', form);
+          const bar = form.querySelector('.quiz-progress span');
+          const count = form.querySelector('.quiz-count');
+          const back = form.querySelector('.quiz-back');
+          const done = form.querySelector('.quiz-done');
+          let current = 0;
+
+          // Answers passed in the link, e.g. /buy/?budget=$800K to $1M
+          const params = new URLSearchParams(location.search);
+          params.forEach((value, name) => {
+            const radio = $$('input[type=radio]', form).find((r) => r.name === name && r.value === value);
+            if (radio) radio.checked = true;
+            const text = form.querySelector('input.quiz-input[name="' + CSS.escape(name) + '"]');
+            if (text) text.value = value;
+          });
+
+          const show = (i, focus = true) => {
+            current = i;
+            steps.forEach((s, n) => (s.hidden = n !== i));
+            const step = steps[i];
+            const last = i === steps.length - 1;
+            bar.style.width = ((i + (last ? 0.85 : 0.15)) / steps.length) * 100 + '%';
+            count.textContent = last ? 'Last step' : 'Question ' + (i + 1) + ' of ' + steps.length;
+            back.hidden = i === 0;
+            if (step.dataset.titleBy) {
+              const by = JSON.parse(step.dataset.titleBy);
+              const type = new FormData(form).get('type');
+              if (by[type]) step.querySelector('legend').textContent = by[type];
+            }
+            if (focus) (step.querySelector('.quiz-input, input[name=name]') || step.querySelector('legend')).focus({ preventScroll: true });
+            if (focus && form.getBoundingClientRect().top < 76) form.scrollIntoView({ block: 'start' });
+          };
+          const next = () => { form.classList.add('js'); show(Math.min(current + 1, steps.length - 1)); };
+
+          steps.forEach((step) => {
+            const kind = step.dataset.kind;
+            const error = step.querySelector('.quiz-error');
+            if (kind === 'choice') {
+              $$('input[type=radio]', step).forEach((r) => {
+                r.addEventListener('click', () => setTimeout(next, 160));
+              });
+            }
+            if (kind === 'text') {
+              const input = step.querySelector('.quiz-input');
+              const go = () => {
+                if (!input.value.trim()) { error.hidden = false; input.focus(); return; }
+                error.hidden = true;
+                next();
+              };
+              step.querySelector('.quiz-next').addEventListener('click', go);
+              input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+              const chips = $$('.chip', step);
+              const sync = () => chips.forEach((c) => c.setAttribute('aria-pressed', String(input.value.split(',').map((v) => v.trim()).includes(c.dataset.chip))));
+              chips.forEach((chip) => chip.addEventListener('click', () => {
+                const picked = input.value.split(',').map((v) => v.trim()).filter(Boolean);
+                const at = picked.indexOf(chip.dataset.chip);
+                at >= 0 ? picked.splice(at, 1) : picked.push(chip.dataset.chip);
+                input.value = picked.join(', ');
+                error.hidden = true;
+                sync();
+              }));
+              input.addEventListener('input', sync);
+              sync();
+            }
+            if (kind === 'pair') {
+              step.querySelector('.quiz-next').addEventListener('click', () => {
+                const groups = $$('.pair-group', step);
+                if (groups.some((g) => !g.querySelector('input:checked'))) { error.hidden = false; return; }
+                error.hidden = true;
+                next();
+              });
+            }
+          });
+
+          back.addEventListener('click', () => show(Math.max(current - 1, 0)));
+
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (current !== steps.length - 1) { next(); return; }
+            const status = form.querySelector('.form-status');
+            const button = form.querySelector('.quiz-submit');
+            const label = button.textContent;
+            status.textContent = '';
+            status.removeAttribute('data-state');
+            button.disabled = true;
+            button.textContent = 'Sending';
+            try {
+              await send(form);
+              steps.forEach((s) => (s.hidden = true));
+              back.hidden = true;
+              count.hidden = true;
+              bar.style.width = '100%';
+              done.hidden = false;
+              done.focus({ preventScroll: true });
+            } catch {
+              status.dataset.state = 'error';
+              status.textContent = failed(form);
+              button.disabled = false;
+              button.textContent = label;
+            }
+          });
+
+          show(0, false);
         });
       })();
     </script>

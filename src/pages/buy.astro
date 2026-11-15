@@ -1,29 +1,58 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import LeadForm from '../components/LeadForm.astro';
+import Quiz from '../components/Quiz.astro';
 import { site } from '../site';
+import { buySteps } from '../quizzes';
+const posts = (await getCollection('blog')).filter((p) => p.data.category === 'Buying').sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-<Base title="Buy a home in the GTA and Ontario" description="Tell Team Jabbar where you want to live and your budget. We send matching homes, book showings and negotiate your offer.">
-  <section class="page-head">
-    <div class="wrap">
-      <h1>Buy a home with us</h1>
-      <p class="lede">Tell us what you need. We do the searching, the showings and the negotiating.</p>
+<Base title="Buy a home in the GTA and Ontario" description="Tell Team Jabbar the home type, area, size and budget you want. We email matching listings, book showings and negotiate your offer.">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>Tell us the home you want. We find it.</h1>
+        <p class="lede">Seven quick questions about type, area, size and budget. We send you homes that fit as they come on the market.</p>
+        <ul class="ticks">
+          <li>Matching listings by email, including ones outside the GTA</li>
+          <li>Showings booked for you</li>
+          <li>An honest opinion on every home, including reasons not to buy</li>
+        </ul>
+        <div class="who"><p>Prefer to talk? Call or text <a href={site.phoneHref}>{site.phone}</a>.</p></div>
+      </div>
+      <div id="start">
+        <Quiz id="q-buy" steps={buySteps} fixedType="buyer" heading="Describe your next home" button="Send me matching homes" success="Got it. We'll start sending homes that match." />
+      </div>
     </div>
   </section>
 
   <section class="band">
-    <div class="wrap split">
-      <div>
-        <h2>How buying works</h2>
-        <ol class="steps" style="grid-template-columns:1fr">
-          <li><h3>Tell us what you want</h3><p>Area, budget, home type and timing. Fill in the form or call {site.phone}.</p></li>
-          <li><h3>Get matching homes</h3><p>We email you listings that fit as they come on the market, including ones in towns outside the GTA.</p></li>
-          <li><h3>See them in person</h3><p>We book the showings and tell you what we see: the good, the repairs, and what it should sell for.</p></li>
-          <li><h3>Make the offer</h3><p>We write and negotiate the offer, then stay with you through inspection, financing and closing day.</p></li>
-        </ol>
-        <p style="margin-top:2rem">Working out what you can afford? Try the <a href="/affordability-calculator/">affordability calculator</a> or read the <a href="/buyers-guide/">buyer's guide</a>.</p>
+    <div class="wrap">
+      <h2>What happens next</h2>
+      <ol class="steps">
+        <li><h3>We call you</h3><p>A short call to confirm what you want and answer your questions.</p></li>
+        <li><h3>You get matching homes</h3><p>Listings that fit arrive by email as they are listed.</p></li>
+        <li><h3>We see them together</h3><p>We book the showings and tell you what we see in each home.</p></li>
+        <li><h3>We make the offer</h3><p>We write and negotiate it, then stay with you through closing.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band-pale">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Before you buy, read these</h2>
+        <a class="btn btn-line" href="/tools/">Calculators and guides</a>
       </div>
-      <LeadForm type="buyer" heading="Start my home search" button="Send me matching homes" success="Got it. We'll email you homes that match." />
+      <div class="posts">
+        {posts.map((p) => (
+          <a class="post-card" href={`/blog/${p.id}/`}>
+            <span class="tag buying">Buying</span>
+            <h3>{p.data.title}</h3>
+            <p>{p.data.description}</p>
+            <span class="more">Read in {p.data.minutes} minutes</span>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 </Base>

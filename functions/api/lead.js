@@ -10,17 +10,33 @@
 const API = 'https://connect.mailerlite.com/api';
 
 const GROUPS = {
-  seller: 'Website: Home evaluation',
-  buyer: 'Website: Buyers',
-  preconstruction: 'Website: Pre-construction list',
-  alerts: 'Website: Listing alerts',
-  contact: 'Website: Contact form',
-  market: 'Website: Market report',
+  seller: ['Website: Sellers'],
+  buyer: ['Website: Buyers'],
+  both: ['Website: Sellers', 'Website: Buyers'],
+  preconstruction: ['Website: Pre-construction list'],
+  alerts: ['Website: Listing alerts'],
+  contact: ['Website: Contact form'],
+  market: ['Website: Market report'],
 };
 // Only people who tick the consent box go here. Send campaigns to this group.
 const NEWSLETTER_GROUP = 'Newsletter (consented)';
 
-const CUSTOM_FIELDS = ['lead_type', 'property_address', 'timeline', 'area', 'budget', 'home_type', 'message'];
+// Website answer -> MailerLite custom field
+const DETAILS = {
+  address: 'property_address',
+  timeline: 'timeline',
+  area: 'area',
+  budget: 'budget',
+  home_type: 'home_type',
+  bedrooms: 'bedrooms',
+  bathrooms: 'bathrooms',
+  size: 'home_size',
+  condition: 'home_condition',
+  also_buying: 'also_buying',
+  source: 'lead_source',
+  message: 'message',
+};
+const CUSTOM_FIELDS = ['lead_type', ...Object.values(DETAILS)];
 
 // Remembered between requests while this worker instance stays warm.
 const groupIds = {};
@@ -86,24 +102,18 @@ export async function onRequestPost({ request, env }) {
 
   try {
     await ensureFields(env);
-    const groups = [await groupId(env, GROUPS[type])];
-    if (data.consent === 'yes') groups.push(await groupId(env, NEWSLETTER_GROUP));
+    const names = [...GROUPS[type]];
+    if (data.consent === 'yes') names.push(NEWSLETTER_GROUP);
+    const groups = (await Promise.all(names.map((n) => groupId(env, n)))).filter(Boolean);
 
     const basic = { name: clean(data.name, 100), phone: clean(data.phone, 40) };
-    const details = {
-      lead_type: type,
-      property_address: clean(data.address),
-      timeline: clean(data.timeline, 60),
-      area: clean(data.area, 120),
-      budget: clean(data.budget, 60),
-      home_type: clean(data.home_type, 60),
-      message: clean(data.message, 2000),
-    };
+    const details = { lead_type: type };
+    for (const [answer, field] of Object.entries(DETAILS)) {
+      const value = clean(data[answer], answer === 'message' ? 2000 : 300);
+      if (value) details[field] = value;
+    }
     const save = (fields) =>
-      ml(env, '/subscribers', {
-        method: 'POST',
-        body: JSON.stringify({ email, fields, groups: groups.filter(Boolean) }),
-      });
+      ml(env, '/subscribers', { method: 'POST', body: JSON.stringify({ email, fields, groups }) });
 
     let res = await save({ ...basic, ...details });
     // If MailerLite rejects the custom fields, still capture the lead itself.

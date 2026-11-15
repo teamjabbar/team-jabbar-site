@@ -1,0 +1,121 @@
+---
+import { site } from '../site';
+import type { Step, Option } from '../quizzes';
+
+interface Props {
+  id: string;
+  steps: Step[];
+  heading: string;
+  button: string;
+  success: string;
+  fixedType?: 'buyer' | 'seller';
+}
+const { id, steps, heading, button, success, fixedType } = Astro.props;
+const opt = (o: Option) => (typeof o === 'string' ? { value: o, label: o } : o);
+
+const icons: Record<string, string> = {
+  key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>',
+  tag: '<path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.5"/>',
+  swap: '<path d="M4 8h14l-4-4M20 16H6l4 4"/>',
+};
+---
+<form class="quiz" id={id} data-quiz data-success={success} data-phone={site.phone}>
+  <p class="quiz-heading">{heading}</p>
+  <div class="quiz-progress" aria-hidden="true"><span></span></div>
+  <p class="quiz-count" aria-live="polite"></p>
+
+  {fixedType && <input type="hidden" name="type" value={fixedType} />}
+  <div class="hp" aria-hidden="true">
+    <label>Leave this empty <input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  {steps.map((s, i) => (
+    <fieldset class="quiz-step" data-step data-kind={s.kind} data-title-by={'titleBy' in s && s.titleBy ? JSON.stringify(s.titleBy) : undefined}>
+      <legend tabindex="-1">{s.title}</legend>
+
+      {s.kind === 'choice' && (
+        <div class={`opts cols-${s.cols ?? 2}`}>
+          {s.options.map(opt).map((o) => (
+            <label class="opt">
+              <input type="radio" name={s.name} value={o.value} />
+              <span class="opt-box">
+                {o.icon && <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" set:html={icons[o.icon]} />}
+                <span class="opt-text"><strong>{o.label}</strong>{o.hint && <small>{o.hint}</small>}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+
+      {s.kind === 'text' && (
+        <>
+          <input class="quiz-input" type="text" name={s.name} placeholder={s.placeholder} aria-label={s.title} autocomplete={s.name === 'address' ? 'street-address' : 'off'} />
+          {s.chips && (
+            <div class="chips">
+              {s.chips.map((c) => <button type="button" class="chip" data-chip={c} aria-pressed="false">{c}</button>)}
+            </div>
+          )}
+          {s.help && <p class="quiz-help">{s.help}</p>}
+          <p class="quiz-error" role="alert" hidden>Enter an answer to continue.</p>
+          <button type="button" class="btn quiz-next">Continue</button>
+        </>
+      )}
+
+      {s.kind === 'pair' && (
+        <>
+          {s.groups.map((g) => (
+            <div class="pair-group" role="group" aria-label={g.label}>
+              <p class="pair-label">{g.label}</p>
+              <div class="opts tight">
+                {g.options.map((o) => (
+                  <label class="opt">
+                    <input type="radio" name={g.name} value={o} />
+                    <span class="opt-box"><span class="opt-text"><strong>{o}</strong></span></span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+          <p class="quiz-error" role="alert" hidden>Pick one of each to continue.</p>
+          <button type="button" class="btn quiz-next">Continue</button>
+        </>
+      )}
+
+      {s.kind === 'contact' && (
+        <>
+          <p class="quiz-sub">{s.sub}</p>
+          <div class="field">
+            <label for={`${id}-name`}>Name</label>
+            <input id={`${id}-name`} name="name" autocomplete="name" required />
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for={`${id}-phone`}>Phone</label>
+              <input id={`${id}-phone`} name="phone" type="tel" autocomplete="tel" required />
+            </div>
+            <div class="field">
+              <label for={`${id}-email`}>Email</label>
+              <input id={`${id}-email`} name="email" type="email" autocomplete="email" required />
+            </div>
+          </div>
+          <label class="consent">
+            <input type="checkbox" name="consent" value="yes" />
+            <span>Email me market updates, new listings and new projects from {site.name}, {site.brokerage.name}. Unsubscribe any time.</span>
+          </label>
+          <button class="btn quiz-submit" type="submit">{button}</button>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </>
+      )}
+    </fieldset>
+  ))}
+
+  <button type="button" class="quiz-back" hidden>Back</button>
+
+  <div class="quiz-done" hidden tabindex="-1">
+    <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21"/><path d="M14 25l7 7 13-15"/></svg>
+    <p class="quiz-done-title">{success}</p>
+    <p>Want to talk now? Call or text <a href={site.phoneHref}>{site.phone}</a>.</p>
+  </div>
+
+  <noscript><p>This form needs JavaScript. Call or text us at {site.phone}.</p></noscript>
+</form>

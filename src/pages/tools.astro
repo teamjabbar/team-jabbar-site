@@ -9,6 +9,7 @@ const tools = [
   ['/sellers-guide/', "Seller's guide", 'How selling works, including whether to buy or sell first.'],
   ['/home-evaluation/', 'Free home evaluation', 'Find out what your home is worth today.'],
   ['/listings/', 'Listing alerts', 'Get new listings in your area by email.'],
+  ['/blog/', 'Articles', 'What to check before you buy, sell or list.'],
 ];
 ---
 <Base title="Real estate tools and guides" description="Mortgage, affordability and Ontario land transfer tax calculators, plus buyer and seller guides from Team Jabbar.">
@@ -18,7 +19,7 @@ const tools = [
       <p class="lede">Run the numbers and learn the process before you make a move.</p>
     </div>
   </section>
-  <section class="band">
+  <section class="band band-pale">
     <div class="wrap">
       <ul class="tool-list">
         {tools.map(([href, name, text]) => <li><a href={href}>{name}</a><p>{text}</p></li>)}

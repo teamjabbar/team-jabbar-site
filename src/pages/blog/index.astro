@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="Advice for Ontario home buyers and sellers" description="Practical articles from Team Jabbar on preparing a home for sale, what to watch for when selling, and what to check before you buy in Ontario.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Advice for buyers and sellers</h1>
+      <p class="lede">What to do, what to check and what to avoid, written for Ontario.</p>
+    </div>
+  </section>
+  <section class="band band-pale">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>All articles</h2>
+        <div class="filter" role="group" aria-label="Show articles about">
+          <button class="chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="Selling" aria-pressed="false">Selling</button>
+          <button class="chip" data-filter="Buying" aria-pressed="false">Buying</button>
+        </div>
+      </div>
+      <div class="posts" id="posts">
+        {posts.map((p) => (
+          <a class="post-card" href={`/blog/${p.id}/`} data-category={p.data.category}>
+            <span class={`tag ${p.data.category.toLowerCase()}`}>{p.data.category}</span>
+            <h3>{p.data.title}</h3>
+            <p>{p.data.description}</p>
+            <span class="more">Read in {p.data.minutes} minutes</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  <script is:inline>
+    (() => {
+      const chips = [...document.querySelectorAll('[data-filter]')];
+      chips.forEach((chip) => chip.addEventListener('click', () => {
+        chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        document.querySelectorAll('#posts .post-card').forEach((card) => {
+          card.hidden = chip.dataset.filter !== 'all' && card.dataset.category !== chip.dataset.filter;
+        });
+      }));
+    })();
+  </script>
+</Base>

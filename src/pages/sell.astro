@@ -1,27 +1,58 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import LeadForm from '../components/LeadForm.astro';
+import Quiz from '../components/Quiz.astro';
+import { site } from '../site';
+import { sellSteps } from '../quizzes';
+const posts = (await getCollection('blog')).filter((p) => p.data.category === 'Selling').sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-<Base title="Sell your home in the GTA and Ontario" description="Team Jabbar prices your home from recent nearby sales, prepares it for market and negotiates every offer. Start with a free home evaluation.">
-  <section class="page-head">
-    <div class="wrap">
-      <h1>Sell your home with us</h1>
-      <p class="lede">It starts with knowing what your home is worth. The evaluation is free.</p>
+<Base title="Sell your home in the GTA and Ontario" description="Find out what your Ontario home is worth. Answer a few questions and a licensed Team Jabbar agent sends a free written evaluation.">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>What is your home worth today?</h1>
+        <p class="lede">Answer a few questions about your home. A licensed agent reviews recent sales near you and sends a written evaluation.</p>
+        <ul class="ticks">
+          <li>Prepared by a person, not an automated estimate</li>
+          <li>Includes which fixes are worth doing before you list</li>
+          <li>Free, with no obligation to list with us</li>
+        </ul>
+        <div class="who"><p>Prefer to talk? Call or text <a href={site.phoneHref}>{site.phone}</a>.</p></div>
+      </div>
+      <div id="start">
+        <Quiz id="q-sell" steps={sellSteps} fixedType="seller" heading="Free home evaluation" button="Send my evaluation" success="Request received. We'll send your evaluation shortly." />
+      </div>
     </div>
   </section>
 
   <section class="band">
-    <div class="wrap split">
-      <div>
-        <h2>How selling works</h2>
-        <ol class="steps" style="grid-template-columns:1fr">
-          <li><h3>Free evaluation</h3><p>We look at what has sold near you and give you a price range in writing.</p></li>
-          <li><h3>Prepare and price</h3><p>We agree on a price and a plan, and tell you which fixes are worth doing and which are not.</p></li>
-          <li><h3>Go to market</h3><p>Your home is listed on MLS® and marketed to buyers and to other agents.</p></li>
-          <li><h3>Offers to closing</h3><p>We bring you every offer, negotiate the terms, and manage the paperwork until the keys change hands.</p></li>
-        </ol>
+    <div class="wrap">
+      <h2>How we sell your home</h2>
+      <ol class="steps">
+        <li><h3>Evaluate</h3><p>We compare your home with recent sales nearby and give you a price range in writing.</p></li>
+        <li><h3>Prepare</h3><p>We agree on a price and a plan, and tell you which fixes are worth it.</p></li>
+        <li><h3>Market</h3><p>Your home goes on MLS® and in front of buyers and other agents.</p></li>
+        <li><h3>Negotiate and close</h3><p>We bring you every offer, negotiate the terms and manage the paperwork.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band-pale">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Before you sell, read these</h2>
+        <a class="btn btn-line" href="/sellers-guide/">Seller's guide</a>
       </div>
-      <LeadForm type="seller" heading="Request a free home evaluation" button="Request my evaluation" success="Request received. One of us will be in touch with your evaluation." />
+      <div class="posts">
+        {posts.map((p) => (
+          <a class="post-card" href={`/blog/${p.id}/`}>
+            <span class="tag selling">Selling</span>
+            <h3>{p.data.title}</h3>
+            <p>{p.data.description}</p>
+            <span class="more">Read in {p.data.minutes} minutes</span>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 </Base>

@@ -1,65 +1,146 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Quiz from '../components/Quiz.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, team, regions } from '../site';
+import { homeSteps } from '../quizzes';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
 ---
-<Base title="Real estate across the GTA and Ontario" description="Team Jabbar is a father and two sons selling and finding homes across the Greater Toronto Area and Ontario. Get a free home evaluation or start your search.">
+<Base title="Buy or sell a home in the GTA and Ontario" description="Tell Team Jabbar what you need in four quick questions. A licensed agent calls you with homes that fit, or a free evaluation of your home.">
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <h1>Realtors to move you forward.</h1>
-        <p class="lede">A father and his two sons, all licensed, helping families buy and sell homes across Ontario.</p>
-        <div class="actions">
-          <a class="btn btn-gold" href="/home-evaluation/">Get my home's value</a>
-          <a class="btn btn-line" href="/buy/">Find a home</a>
+        <h1>Buying or selling a home in Ontario?</h1>
+        <p class="lede">Answer four quick questions. A licensed agent from our family team gets back to you with a plan.</p>
+        <ul class="ticks">
+          <li>Selling: a free written evaluation of your home</li>
+          <li>Buying: listings matched to your area and budget</li>
+          <li>No cost and no obligation</li>
+        </ul>
+        <div class="who">
+          <div class="faces">{faces.map((src) => <img src={src} alt="" width="48" height="48" />)}</div>
+          <p>You hear from Abdul, Ali or Umer. Never a call centre.</p>
         </div>
       </div>
-      <div class="hero-photo">
-        <img src={site.images.team} alt="Abdul-Jabbar Anjum with his sons Ali and Umer Jabbar" width="725" height="500" />
+      <div id="start">
+        <Quiz id="q-home" steps={homeSteps} heading="Start here. It takes about 30 seconds." button="Get my plan" success="Got it. One of us will be in touch shortly." />
       </div>
     </div>
   </section>
 
-  <section class="route" aria-label="Where we work">
+  <section class="proof" aria-label="About the team">
     <div class="wrap">
-      <p>Based in Mississauga. We work the whole Greater Toronto Area and travel for clients across the province.</p>
-      <ol>
-        {regions.map((r) => <li class={r === 'Greater Toronto Area' ? 'home' : undefined}>{r}</li>)}
-      </ol>
-    </div>
-  </section>
-
-  <section class="doors">
-    <div class="door door-buy">
-      <h2>Buying a home</h2>
-      <p>Tell us where you want to live and what you can spend. We send you homes that fit, book the showings, and negotiate the offer.</p>
-      <a class="btn" href="/buy/">Start my search</a>
-    </div>
-    <div class="door door-sell">
-      <h2>Selling a home</h2>
-      <p>We price your home from recent sales on your street, prepare it for market, and handle every offer until it closes.</p>
-      <a class="btn" href="/sell/">Plan my sale</a>
-    </div>
-  </section>
-
-  <section class="band band-dark" id="evaluation">
-    <div class="wrap split">
-      <div>
-        <h2>What is your home worth today?</h2>
-        <p class="lede">Send us your address. One of us will look at what has sold near you and send back a written evaluation, free and with no obligation.</p>
-        <ul class="plain-list">
-          <li><strong>Prepared by a person</strong>We review recent sales near you ourselves. This is not an automated estimate.</li>
-          <li><strong>Yours to keep</strong>Use it to plan a sale, a refinance, or just to know where you stand.</li>
-        </ul>
-      </div>
-      <LeadForm type="seller" heading="Request a free home evaluation" button="Request my evaluation" success="Request received. One of us will be in touch with your evaluation." />
+      <ul>
+        <li><strong>3 licensed agents</strong>A father and his two sons</li>
+        <li><strong>15+ years</strong>Abdul's experience in Ontario real estate</li>
+        <li><strong>GTA and beyond</strong>{regions.filter((r) => r !== 'Greater Toronto Area').join(', ')}</li>
+        <li><strong>CENTURY 21</strong>Green Realty Inc., Brokerage</li>
+      </ul>
     </div>
   </section>
 
   <section class="band">
     <div class="wrap">
-      <h2>Three licensed agents, one family</h2>
-      <p class="lede">When you call, you reach one of us. No call centre, no handoffs to strangers.</p>
+      <div class="cards">
+        <div class="card path">
+          <h2>Buying a home</h2>
+          <ul>
+            <li>New listings that match, sent as they hit the market</li>
+            <li>Showings booked around your schedule</li>
+            <li>An honest read on every home, and on what to offer</li>
+          </ul>
+          <a class="btn" href="/buy/">Tell us what you want</a>
+        </div>
+        <div class="card path alt">
+          <h2>Selling a home</h2>
+          <ul>
+            <li>A price based on what has sold near you</li>
+            <li>Advice on which fixes are worth doing first</li>
+            <li>Every offer negotiated, through to closing day</li>
+          </ul>
+          <a class="btn" href="/sell/">Get my home's value</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-dark" id="budget">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>What does your budget look like each month?</h2>
+          <p class="lede">Drag the sliders. The numbers update as you move.</p>
+        </div>
+      </div>
+      <div class="explorer">
+        <div>
+          <div class="slider">
+            <label for="x-price">Home price <output id="x-price-out" for="x-price"></output></label>
+            <input type="range" id="x-price" min="300000" max="2500000" step="25000" value="900000" />
+          </div>
+          <div class="slider">
+            <label for="x-down">Down payment <output id="x-down-out" for="x-down"></output></label>
+            <input type="range" id="x-down" min="5" max="50" step="1" value="20" />
+          </div>
+          <div class="slider">
+            <label for="x-rate">Interest rate <output id="x-rate-out" for="x-rate"></output></label>
+            <input type="range" id="x-rate" min="2" max="8" step="0.05" value="4.5" />
+          </div>
+        </div>
+        <div class="readout" aria-live="polite">
+          <p class="fine" style="margin:0">Estimated mortgage payment</p>
+          <p class="big"><span id="x-pay"></span><span style="font-size:1.1rem;font-weight:600;letter-spacing:0"> a month</span></p>
+          <table class="result-table">
+            <tr><th>Down payment</th><td id="x-cash"></td></tr>
+            <tr><th>Ontario land transfer tax</th><td id="x-ltt"></td></tr>
+            <tr><th>Mortgage</th><td id="x-loan"></td></tr>
+          </table>
+          <p class="fine">Principal and interest over 25 years. Leaves out property tax, insurance and condo fees. Toronto buyers pay a second land transfer tax.</p>
+          <a class="btn" id="x-cta" href="/buy/">Show me homes in this range</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-pale" id="learn">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>Know what to look for before you move</h2>
+          <p class="lede">Straight answers on preparing, selling and buying a home in Ontario.</p>
+        </div>
+        <div class="filter" role="group" aria-label="Show articles about">
+          <button class="chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="Selling" aria-pressed="false">Selling</button>
+          <button class="chip" data-filter="Buying" aria-pressed="false">Buying</button>
+        </div>
+      </div>
+      <div class="posts" id="posts">
+        {posts.map((p) => (
+          <a class="post-card" href={`/blog/${p.id}/`} data-category={p.data.category}>
+            <span class={`tag ${p.data.category.toLowerCase()}`}>{p.data.category}</span>
+            <h3>{p.data.title}</h3>
+            <p>{p.data.description}</p>
+            <span class="more">Read in {p.data.minutes} minutes</span>
+          </a>
+        ))}
+      </div>
+      <div class="actions"><a class="btn btn-line" href="/blog/">See all articles</a></div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>Three licensed agents, one family</h2>
+          <p class="lede">When you call, you reach one of us.</p>
+        </div>
+        <a class="btn btn-line" href="/about/">About the team</a>
+      </div>
       <div class="people">
         {team.map((p) => (
           <div class="person">
@@ -72,7 +153,6 @@ import { site, team, regions } from '../site';
           </div>
         ))}
       </div>
-      <div class="actions"><a class="btn btn-line" href="/about/">About the team</a></div>
     </div>
   </section>
 
@@ -80,10 +160,44 @@ import { site, team, regions } from '../site';
     <div class="wrap split">
       <div>
         <h2>New condos and developments, before the public launch</h2>
-        <p>Builders send us floor plans and price lists for upcoming projects before they open to the public. Join the list and we forward the ones that match what you want.</p>
+        <p class="lede">Builders send us floor plans and price lists before they open to the public. Join the list and we forward the ones that match what you want.</p>
         <div class="actions"><a class="btn btn-line" href="/pre-construction/">How pre-construction works</a></div>
       </div>
       <LeadForm type="preconstruction" heading="Join the pre-construction list" button="Add me to the list" success="You're on the list. We'll email you when a matching project comes in." />
     </div>
   </section>
+
+  <script is:inline>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const money = (n) => n.toLocaleString('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 });
+      const short = (n) => (n >= 1e6 ? '$' + (n / 1e6).toFixed(n % 1e5 ? 2 : 1).replace(/\.?0+$/, '') + 'M' : '$' + Math.round(n / 1000) + 'K');
+      const brackets = [[55000, 0.005], [250000, 0.01], [400000, 0.015], [2000000, 0.02], [Infinity, 0.025]];
+      const ltt = (price) => { let t = 0, lo = 0; for (const [hi, r] of brackets) { if (price > lo) t += (Math.min(price, hi) - lo) * r; lo = hi; } return t; };
+      const bucket = (p) => p < 600000 ? 'Under $600K' : p < 800000 ? '$600K to $800K' : p < 1000000 ? '$800K to $1M' : p < 1500000 ? '$1M to $1.5M' : p <= 2000000 ? '$1.5M to $2M' : 'Over $2M';
+      const run = () => {
+        const price = +$('x-price').value, pct = +$('x-down').value, rate = +$('x-rate').value / 100;
+        const down = price * pct / 100, loan = price - down;
+        const m = Math.pow(1 + rate / 2, 1 / 6) - 1, n = 300;
+        $('x-price-out').textContent = short(price);
+        $('x-down-out').textContent = pct + '%';
+        $('x-rate-out').textContent = (rate * 100).toFixed(2) + '%';
+        $('x-pay').textContent = money(loan * m / (1 - Math.pow(1 + m, -n)));
+        $('x-cash').textContent = money(down);
+        $('x-ltt').textContent = money(ltt(price));
+        $('x-loan').textContent = money(loan);
+        $('x-cta').href = '/buy/?budget=' + encodeURIComponent(bucket(price));
+      };
+      ['x-price', 'x-down', 'x-rate'].forEach((id) => $(id).addEventListener('input', run));
+      run();
+
+      const chips = [...document.querySelectorAll('[data-filter]')];
+      chips.forEach((chip) => chip.addEventListener('click', () => {
+        chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        document.querySelectorAll('#posts .post-card').forEach((card) => {
+          card.hidden = chip.dataset.filter !== 'all' && card.dataset.category !== chip.dataset.filter;
+        });
+      }));
+    })();
+  </script>
 </Base>

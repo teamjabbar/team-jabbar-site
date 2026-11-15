@@ -1,22 +1,25 @@
 ---
 import Base from '../layouts/Base.astro';
-import LeadForm from '../components/LeadForm.astro';
+import Quiz from '../components/Quiz.astro';
 import { site } from '../site';
+import { sellSteps } from '../quizzes';
 ---
 <Base title="Free home evaluation" description="Find out what your Ontario home is worth. Team Jabbar reviews recent sales near you and sends a written evaluation, free and with no obligation.">
-  <section class="band band-dark">
-    <div class="wrap split">
-      <div>
-        <h1 style="color:var(--gold);font-size:clamp(2.4rem,6vw,4.2rem)">What is your home worth today?</h1>
-        <p class="lede">Send us your address. One of us reviews recent sales near you and sends back a written evaluation.</p>
-        <ul class="plain-list">
-          <li><strong>Free</strong>No cost and no obligation to list with us.</li>
-          <li><strong>Prepared by a person</strong>A licensed agent on our team reviews the sales. This is not an automated estimate.</li>
-          <li><strong>Anywhere in Ontario</strong>From the GTA to Windsor, Ottawa, Sudbury, Barrie and Timmins.</li>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>Get a free evaluation of your home</h1>
+        <p class="lede">Tell us about your home. One of us reviews recent sales near you and sends back a written evaluation.</p>
+        <ul class="ticks">
+          <li>Prepared by a licensed agent on our team</li>
+          <li>Anywhere in Ontario, from the GTA to Windsor, Ottawa and Sudbury</li>
+          <li>Free, with no obligation to list with us</li>
         </ul>
-        <p style="margin-top:1.5rem">Prefer to talk? Call <a href={site.phoneHref}>{site.phone}</a>.</p>
+        <div class="who"><p>Prefer to talk? Call or text <a href={site.phoneHref}>{site.phone}</a>.</p></div>
       </div>
-      <LeadForm type="seller" heading="Request a free home evaluation" button="Request my evaluation" success="Request received. One of us will be in touch with your evaluation." />
+      <div id="start">
+        <Quiz id="q-eval" steps={sellSteps} fixedType="seller" heading="Free home evaluation" button="Send my evaluation" success="Request received. We'll send your evaluation shortly." />
+      </div>
     </div>
   </section>
 </Base>
