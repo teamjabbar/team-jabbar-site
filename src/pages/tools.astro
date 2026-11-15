@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+const tools = [
+  ['/mortgage-calculator/', 'Mortgage calculator', 'Estimate your payment by price, down payment, rate and how often you pay.'],
+  ['/affordability-calculator/', 'Affordability calculator', 'See roughly how much home your income supports.'],
+  ['/land-transfer-tax-calculator/', 'Land transfer tax calculator', 'Ontario and Toronto land transfer tax, with first-time buyer rebates.'],
+  ['/market-report/', 'Market report', 'Ask for recent sale prices and trends in your city or neighbourhood.'],
+  ['/buyers-guide/', "Buyer's guide", 'How buying works in Ontario, from pre-approval to closing day.'],
+  ['/sellers-guide/', "Seller's guide", 'How selling works, including whether to buy or sell first.'],
+  ['/home-evaluation/', 'Free home evaluation', 'Find out what your home is worth today.'],
+  ['/listings/', 'Listing alerts', 'Get new listings in your area by email.'],
+];
+---
+<Base title="Real estate tools and guides" description="Mortgage, affordability and Ontario land transfer tax calculators, plus buyer and seller guides from Team Jabbar.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Tools and guides</h1>
+      <p class="lede">Run the numbers and learn the process before you make a move.</p>
+    </div>
+  </section>
+  <section class="band">
+    <div class="wrap">
+      <ul class="tool-list">
+        {tools.map(([href, name, text]) => <li><a href={href}>{name}</a><p>{text}</p></li>)}
+      </ul>
+    </div>
+  </section>
+</Base>

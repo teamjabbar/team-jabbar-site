@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+---
+<Base title="Market report for your area" description="Ask Team Jabbar for a market report on your Ontario city or neighbourhood: recent sale prices, how fast homes sell and where prices are heading.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Market report for your area</h1>
+      <p class="lede">Tell us the city or neighbourhood. We send you what homes there are selling for.</p>
+    </div>
+  </section>
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <h2>What you get</h2>
+        <ul class="plain-list">
+          <li><strong>Recent sale prices</strong>What homes like yours, or like the one you want, have sold for.</li>
+          <li><strong>How fast homes sell</strong>Days on market and how sale prices compare with asking prices.</li>
+          <li><strong>Our read on it</strong>Whether conditions favour buyers or sellers right now, in plain language.</li>
+        </ul>
+      </div>
+      <LeadForm type="market" heading="Send me a market report" button="Send my market report" success="Request received. We'll email your market report." />
+    </div>
+  </section>
+</Base>

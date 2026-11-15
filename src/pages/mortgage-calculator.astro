@@ -1,11 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 ---
-<Base title="Mortgage calculator" description="Estimate your monthly mortgage payment on an Ontario home.">
+<Base title="Mortgage calculator" description="Estimate your mortgage payment on an Ontario home by price, down payment, rate, amortization and payment frequency.">
   <section class="page-head">
     <div class="wrap">
       <h1>Mortgage calculator</h1>
-      <p class="lede">Estimate a monthly payment before you start looking.</p>
+      <p class="lede">Estimate your payment before you start looking.</p>
     </div>
   </section>
 
@@ -18,13 +18,30 @@ import Base from '../layouts/Base.astro';
           <div class="field"><label for="c-rate">Interest rate (%)</label><input id="c-rate" type="number" min="0" step="0.01" value="4.5" inputmode="decimal" /></div>
           <div class="field"><label for="c-years">Amortization (years)</label><input id="c-years" type="number" min="1" max="35" value="25" inputmode="numeric" /></div>
         </div>
+        <div class="field">
+          <label for="c-freq">How often you pay</label>
+          <select id="c-freq">
+            <option value="12">Monthly</option>
+            <option value="24">Twice a month</option>
+            <option value="26">Every two weeks</option>
+            <option value="52">Weekly</option>
+          </select>
+        </div>
       </form>
       <div>
-        <h2>Estimated monthly payment</h2>
+        <h2 id="c-label">Estimated payment</h2>
         <p class="calc-out" id="c-out" aria-live="polite"></p>
-        <p id="c-detail"></p>
+        <table class="result-table">
+          <tr><th>Mortgage amount</th><td id="c-loan"></td></tr>
+          <tr><th>Down payment</th><td id="c-pct"></td></tr>
+          <tr><th>Interest over a 5-year term</th><td id="c-int"></td></tr>
+          <tr><th>Balance after 5 years</th><td id="c-bal"></td></tr>
+        </table>
         <p class="fine">An estimate of principal and interest only, using Canadian semi-annual compounding. It leaves out property tax, condo fees, mortgage default insurance and closing costs. Ask your lender or mortgage broker for exact figures.</p>
-        <div class="actions"><a class="btn" href="/buy/">Start my home search</a></div>
+        <div class="actions">
+          <a class="btn" href="/buy/">Start my home search</a>
+          <a class="btn btn-line" href="/affordability-calculator/">What can I afford?</a>
+        </div>
       </div>
     </div>
   </section>
@@ -37,14 +54,21 @@ import Base from '../layouts/Base.astro';
         const price = +$('c-price').value || 0;
         const down = +$('c-down').value || 0;
         const rate = (+$('c-rate').value || 0) / 100;
-        const n = (+$('c-years').value || 0) * 12;
+        const years = +$('c-years').value || 0;
+        const f = +$('c-freq').value;
         const loan = Math.max(price - down, 0);
-        if (!loan || !n) { $('c-out').textContent = money(0); $('c-detail').textContent = ''; return; }
+        const n = years * f;
         // Canadian fixed mortgages compound semi-annually.
-        const m = Math.pow(1 + rate / 2, 1 / 6) - 1;
-        const pay = m === 0 ? loan / n : (loan * m) / (1 - Math.pow(1 + m, -n));
+        const r = Math.pow(1 + rate / 2, 2 / f) - 1;
+        const pay = !loan || !n ? 0 : r === 0 ? loan / n : (loan * r) / (1 - Math.pow(1 + r, -n));
+        const k = Math.min(5 * f, n);
+        const bal = r === 0 ? loan - pay * k : loan * Math.pow(1 + r, k) - (pay * (Math.pow(1 + r, k) - 1)) / r;
+        $('c-label').textContent = 'Estimated payment, ' + $('c-freq').selectedOptions[0].textContent.toLowerCase();
         $('c-out').textContent = money(pay);
-        $('c-detail').textContent = 'On a mortgage of ' + money(loan) + '.';
+        $('c-loan').textContent = money(loan);
+        $('c-pct').textContent = price ? ((down / price) * 100).toFixed(1) + '%' : '';
+        $('c-int').textContent = money(Math.max(pay * k - (loan - Math.max(bal, 0)), 0));
+        $('c-bal').textContent = money(Math.max(bal, 0));
       };
       $('calc').addEventListener('input', run);
       run();

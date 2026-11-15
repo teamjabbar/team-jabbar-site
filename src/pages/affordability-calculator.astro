@@ -1,0 +1,75 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Mortgage affordability calculator" description="Estimate how much home your income supports, using the debt ratios and stress test Canadian lenders apply.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>What can you afford?</h1>
+      <p class="lede">A rough ceiling based on your income, debts and down payment.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <form class="form" id="calc">
+        <div class="field"><label for="a-income">Household income before tax, per year ($)</label><input id="a-income" type="number" min="0" step="1000" value="150000" inputmode="numeric" /></div>
+        <div class="field"><label for="a-debts">Monthly debt payments: car, loans, credit cards ($)</label><input id="a-debts" type="number" min="0" step="50" value="500" inputmode="numeric" /></div>
+        <div class="field"><label for="a-down">Down payment ($)</label><input id="a-down" type="number" min="0" step="1000" value="150000" inputmode="numeric" /></div>
+        <div class="row">
+          <div class="field"><label for="a-rate">Interest rate (%)</label><input id="a-rate" type="number" min="0" step="0.01" value="4.5" inputmode="decimal" /></div>
+          <div class="field"><label for="a-years">Amortization (years)</label><input id="a-years" type="number" min="1" max="35" value="25" inputmode="numeric" /></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="a-tax">Property tax, per month ($)</label><input id="a-tax" type="number" min="0" step="10" value="450" inputmode="numeric" /></div>
+          <div class="field"><label for="a-heat">Heating, per month ($)</label><input id="a-heat" type="number" min="0" step="10" value="150" inputmode="numeric" /></div>
+        </div>
+        <div class="field"><label for="a-condo">Condo fees, per month ($)</label><input id="a-condo" type="number" min="0" step="10" value="0" inputmode="numeric" /></div>
+      </form>
+      <div>
+        <h2>Estimated maximum home price</h2>
+        <p class="calc-out" id="a-out" aria-live="polite"></p>
+        <table class="result-table">
+          <tr><th>Maximum mortgage</th><td id="a-loan"></td></tr>
+          <tr><th>Monthly payment at your rate</th><td id="a-pay"></td></tr>
+          <tr><th>Rate used to qualify (stress test)</th><td id="a-stress"></td></tr>
+          <tr><th>What limits you</th><td id="a-limit"></td></tr>
+        </table>
+        <p class="fine">An estimate only. It assumes housing costs up to 39% of income and total debts up to 44%, qualified at your rate plus 2% or 5.25%, whichever is higher. It ignores mortgage default insurance and minimum down payment rules. Lenders set their own limits, so get a pre-approval before you shop.</p>
+        <div class="actions">
+          <a class="btn" href="/buy/">Start my home search</a>
+          <a class="btn btn-line" href="/land-transfer-tax-calculator/">Estimate land transfer tax</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const v = (id) => +$(id).value || 0;
+      const money = (n) => n.toLocaleString('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 });
+      const factor = (rate, n) => {
+        const m = Math.pow(1 + rate / 2, 1 / 6) - 1;
+        return m === 0 ? n : (1 - Math.pow(1 + m, -n)) / m;
+      };
+      const run = () => {
+        const income = v('a-income') / 12;
+        const costs = v('a-tax') + v('a-heat') + v('a-condo') * 0.5;
+        const gds = 0.39 * income - costs;
+        const tds = 0.44 * income - costs - v('a-debts');
+        const room = Math.max(Math.min(gds, tds), 0);
+        const rate = v('a-rate') / 100;
+        const stress = Math.max(rate + 0.02, 0.0525);
+        const n = v('a-years') * 12;
+        const loan = n ? room * factor(stress, n) : 0;
+        $('a-out').textContent = money(loan + v('a-down'));
+        $('a-loan').textContent = money(loan);
+        $('a-pay').textContent = n && loan ? money(loan / factor(rate, n)) : money(0);
+        $('a-stress').textContent = (stress * 100).toFixed(2) + '%';
+        $('a-limit').textContent = tds < gds ? 'Your other debts' : 'Housing costs against income';
+      };
+      $('calc').addEventListener('input', run);
+      run();
+    })();
+  </script>
+</Base>

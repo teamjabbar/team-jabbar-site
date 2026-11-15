@@ -2,7 +2,7 @@
 import { site } from '../site';
 
 interface Props {
-  type: 'seller' | 'buyer' | 'preconstruction' | 'alerts' | 'contact';
+  type: 'seller' | 'buyer' | 'preconstruction' | 'alerts' | 'contact' | 'market';
   heading: string;
   button: string;
   success: string;
@@ -91,6 +91,13 @@ const id = `f-${type}`;
         <option>Investment unit</option>
         <option>Open to anything</option>
       </select>
+    </div>
+  )}
+
+  {type === 'market' && (
+    <div class="field">
+      <label for={`${id}-city`}>City or neighbourhood</label>
+      <input id={`${id}-city`} name="area" placeholder="e.g. Mississauga, Barrie, Ottawa" required />
     </div>
   )}
 

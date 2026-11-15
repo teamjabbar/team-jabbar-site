@@ -8,6 +8,7 @@
 //   ML_GROUP_PRECONSTRUCTION  group ID for the pre-construction list
 //   ML_GROUP_ALERTS           group ID for listing alerts
 //   ML_GROUP_CONTACT          group ID for general enquiries
+//   ML_GROUP_MARKET           group ID for market report requests
 //   ML_GROUP_NEWSLETTER       group ID for people who ticked the consent box
 //
 // Custom fields to create once in MailerLite (Subscribers > Fields), all text:
@@ -19,6 +20,7 @@ const GROUP_VARS = {
   preconstruction: 'ML_GROUP_PRECONSTRUCTION',
   alerts: 'ML_GROUP_ALERTS',
   contact: 'ML_GROUP_CONTACT',
+  market: 'ML_GROUP_MARKET',
 };
 
 const clean = (v, max = 500) => String(v ?? '').trim().slice(0, max);
