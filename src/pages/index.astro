@@ -6,6 +6,7 @@ import LeadForm from '../components/LeadForm.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { liveProjects } from '../projects';
 import { site, team, regions } from '../site';
+import { asset } from '../assets';
 import { homeSteps } from '../quizzes';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -24,7 +25,7 @@ const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
           <li>No cost and no obligation</li>
         </ul>
         <div class="who">
-          <div class="faces">{faces.map((src) => <img src={src} alt="" width="48" height="48" />)}</div>
+          <div class="faces">{faces.map((src) => <img src={asset(src)!.src} alt="" width="48" height="48" />)}</div>
           <p>You hear from Abdul, Ali or Umer. Never a call centre.</p>
         </div>
       </div>
@@ -169,7 +170,7 @@ const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
         {team.map((p) => (
           <div class="person">
             {p.photo
-              ? <img src={p.photo} alt={p.name} width="400" height="400" loading="lazy" />
+              ? <img src={asset(p.photo)!.src} alt={p.name} width="400" height="400" loading="lazy" />
               : <div class="no-photo" aria-hidden="true">{p.name[0]}</div>}
             <h3>{p.name}</h3>
             <p class="role">{p.role}</p>

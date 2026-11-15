@@ -22,11 +22,13 @@ export const site = {
   },
   // Bridge until the new site has its own listing feed: the existing MLS search.
   listingsSearchUrl: 'https://www.teamjabbar.ca/PropertySearchMap',
-  // TEMPORARY: these point at the old site's image host. Replace with files in
-  // /public/images (e.g. '/images/team.png') before the old site is cancelled.
+  // Web addresses here are copied onto this site at build time (scripts/fetch-assets.mjs).
   images: {
     team: 'https://ik.imagekit.io/remarketer/media/3759-20230124045130.png',
-    logo: 'https://ik.imagekit.io/remarketer/media/3759-20230117050447.png',
+    logo: '/images/logo.png',
+    logoWhite: '/images/logo-white.png',
+    // Aerial neighbourhood photo behind the lead forms (Unsplash, free licence)
+    hero: 'https://images.unsplash.com/photo-1637123433690-228bb002d9e9?w=2400&q=80',
   },
 };
 

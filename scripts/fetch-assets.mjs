@@ -21,6 +21,9 @@ for (const file of await readdir(SRC)) {
   for (const m of front.matchAll(/https?:\/\/[^\s"'\],]+/g)) urls.add(m[0]);
 }
 
+// Team photos and the hero photo listed in src/site.ts
+for (const m of (await readFile('src/site.ts', 'utf8')).matchAll(/https:\/\/(?:ik\.imagekit\.io|images\.unsplash\.com)\/[^\s"'\],]+/g)) urls.add(m[0]);
+
 await mkdir(OUT, { recursive: true });
 const manifest = {};
 let ok = 0, failed = 0;
@@ -33,7 +36,7 @@ async function one(url) {
       const res = await fetch(url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(30000) });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const input = Buffer.from(await res.arrayBuffer());
-      await sharp(input).rotate().resize({ width: 1800, withoutEnlargement: true }).webp({ quality: 80 }).toFile(file);
+      await sharp(input).rotate().resize({ width: 2000, withoutEnlargement: true }).webp({ quality: 80 }).toFile(file);
     }
     const meta = await sharp(file).metadata();
     manifest[url] = { src: '/assets/p/' + name, w: meta.width, h: meta.height };

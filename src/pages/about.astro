@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site, team, regions } from '../site';
+import { asset } from '../assets';
 ---
 <Base title="About the team" description="Team Jabbar is Abdul-Jabbar Anjum and his sons Ali and Umer Jabbar, licensed real estate agents with CENTURY 21 Green Realty Inc., Brokerage in Mississauga.">
   <section class="page-head">
@@ -17,7 +18,7 @@ import { site, team, regions } from '../site';
         {team.map((p) => (
           <div class="person">
             {p.photo
-              ? <img src={p.photo} alt={p.name} width="400" height="400" loading="lazy" />
+              ? <img src={asset(p.photo)!.src} alt={p.name} width="400" height="400" loading="lazy" />
               : <div class="no-photo" aria-hidden="true">{p.name[0]}</div>}
             <h3>{p.name}</h3>
             <p class="role">{p.role}</p>

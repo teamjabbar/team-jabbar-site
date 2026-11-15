@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { site, nav } from '../site';
+import { asset } from '../assets';
 
 interface Props { title: string; description: string; article?: boolean; }
 const { title, description, article = false } = Astro.props;
@@ -8,6 +9,7 @@ const path = Astro.url.pathname;
 const fullTitle = `${title} | ${site.name}`;
 const canonical = new URL(path, site.url).href;
 const year = new Date().getFullYear();
+const heroImg = asset(site.images.hero)!.src;
 
 const schema = {
   '@context': 'https://schema.org',
@@ -40,19 +42,20 @@ const schema = {
     <meta property="og:description" content={description} />
     <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:url" content={canonical} />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#2d2d2d" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+    <style set:html={`:root{--hero-img:url("${heroImg}")}`}></style>
     <slot name="head" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-head">
       <div class="wrap">
-        <a class="brand" href="/">Team <span>Jabbar</span></a>
+        <a class="brand" href="/" aria-label={`${site.name} home`}><img src={site.images.logoWhite} alt="The Jabbars" width="200" height="58" /></a>
         <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
         <nav class="site-nav" id="site-nav" aria-label="Main">
           <ul>
