@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+---
+<Base title="Pre-construction condos and new developments" description="Get floor plans and price lists for new condo and housing developments in Ontario before the public launch. Join Team Jabbar's pre-construction list.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>New projects, before the public launch</h1>
+      <p class="lede">Builders send agents their floor plans and prices first. We pass them on to you.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <h2>How pre-construction works</h2>
+        <ol class="steps" style="grid-template-columns:1fr">
+          <li><h3>Join the list</h3><p>Tell us what kind of home or investment you want.</p></li>
+          <li><h3>Get projects by email</h3><p>When a builder releases a project that fits, we email you the floor plans, prices and deposit structure.</p></li>
+          <li><h3>Reserve through us</h3><p>If you like one, we submit your worksheet to the builder and walk you through the agreement.</p></li>
+          <li><h3>Review before you commit</h3><p>New condo purchases in Ontario come with a 10-day cooling-off period. Use it to have a lawyer review the agreement.</p></li>
+        </ol>
+      </div>
+      <LeadForm type="preconstruction" heading="Join the pre-construction list" button="Add me to the list" success="You're on the list. We'll email you when a matching project comes in." />
+    </div>
+  </section>
+</Base>

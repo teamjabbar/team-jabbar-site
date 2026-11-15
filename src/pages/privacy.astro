@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site';
+---
+<Base title="Privacy policy" description="How Team Jabbar collects and uses your information.">
+  <section class="page-head"><div class="wrap"><h1>Privacy policy</h1></div></section>
+  <section class="band">
+    <div class="wrap">
+      <h2>What we collect</h2>
+      <p>When you fill in a form on this site we collect what you enter: your name, email, phone number, and details about the home you want to buy or sell.</p>
+      <h2>How we use it</h2>
+      <p>We use it to answer your request. If you tick the box asking for email updates, we also send you market updates, new listings and new projects. Every email has an unsubscribe link.</p>
+      <h2>Who sees it</h2>
+      <p>Your information is seen by {site.name} and {site.brokerage.name}. It is stored with our email provider, MailerLite, and our website host, Cloudflare. We do not sell your information.</p>
+      <h2>Your choices</h2>
+      <p>To see, correct or delete your information, or to stop emails, write to <a href={`mailto:${site.email}`}>{site.email}</a> or call {site.phone}.</p>
+    </div>
+  </section>
+</Base>

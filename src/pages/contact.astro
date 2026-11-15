@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../site';
+---
+<Base title="Contact" description="Call, email or message Team Jabbar at CENTURY 21 Green Realty Inc., Brokerage in Mississauga.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Talk to us</h1>
+      <p class="lede">Call or text {site.phone}, or send a message.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <ul class="plain-list" style="margin-top:0">
+          <li><strong>Direct</strong><a href={site.phoneHref}>{site.phone}</a></li>
+          <li><strong>Office</strong><a href={site.brokerage.officeHref}>{site.brokerage.office}</a></li>
+          <li><strong>Email</strong><a href={`mailto:${site.email}`}>{site.email}</a></li>
+          <li><strong>Brokerage</strong>{site.brokerage.name}<br />{site.brokerage.street}, {site.brokerage.city}</li>
+        </ul>
+      </div>
+      <LeadForm type="contact" heading="Send us a message" button="Send message" success="Message sent. We'll get back to you soon." />
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../site';
+---
+<Base title="Buy a home in the GTA and Ontario" description="Tell Team Jabbar where you want to live and your budget. We send matching homes, book showings and negotiate your offer.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Buy a home with us</h1>
+      <p class="lede">Tell us what you need. We do the searching, the showings and the negotiating.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <h2>How buying works</h2>
+        <ol class="steps" style="grid-template-columns:1fr">
+          <li><h3>Tell us what you want</h3><p>Area, budget, home type and timing. Fill in the form or call {site.phone}.</p></li>
+          <li><h3>Get matching homes</h3><p>We email you listings that fit as they come on the market, including ones in towns outside the GTA.</p></li>
+          <li><h3>See them in person</h3><p>We book the showings and tell you what we see: the good, the repairs, and what it should sell for.</p></li>
+          <li><h3>Make the offer</h3><p>We write and negotiate the offer, then stay with you through inspection, financing and closing day.</p></li>
+        </ol>
+        <p style="margin-top:2rem">Working out what you can afford? Try the <a href="/mortgage-calculator/">mortgage calculator</a>.</p>
+      </div>
+      <LeadForm type="buyer" heading="Start my home search" button="Send me matching homes" success="Got it. We'll email you homes that match." />
+    </div>
+  </section>
+</Base>

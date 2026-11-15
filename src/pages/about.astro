@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, team, regions } from '../site';
+---
+<Base title="About the team" description="Team Jabbar is Abdul-Jabbar Anjum and his sons Ali and Umer Jabbar, licensed real estate agents with CENTURY 21 Green Realty Inc., Brokerage in Mississauga.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>A father and two sons</h1>
+      <p class="lede">All three of us are licensed, and all three of us answer the phone.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <p class="lede">We are Team Jabbar, with {site.brokerage.name} in Mississauga. Our aim is simple: a real estate experience without the hassle.</p>
+      <div class="people">
+        {team.map((p) => (
+          <div class="person">
+            {p.photo
+              ? <img src={p.photo} alt={p.name} width="400" height="400" loading="lazy" />
+              : <div class="no-photo" aria-hidden="true">{p.name[0]}</div>}
+            <h3>{p.name}</h3>
+            <p class="role">{p.role}</p>
+            {p.bio && <p>{p.bio}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-pale">
+    <div class="wrap">
+      <h2>Where we work</h2>
+      <p>Most of our clients are in the Greater Toronto Area. We also work with buyers and sellers across the province, including {regions.filter((r) => r !== 'Greater Toronto Area').join(', ')}.</p>
+      <div class="actions">
+        <a class="btn" href="/contact/">Talk to us</a>
+        <a class="btn btn-line" href="/home-evaluation/">Get my home's value</a>
+      </div>
+    </div>
+  </section>
+</Base>

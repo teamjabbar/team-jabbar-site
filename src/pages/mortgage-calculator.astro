@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Mortgage calculator" description="Estimate your monthly mortgage payment on an Ontario home.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Mortgage calculator</h1>
+      <p class="lede">Estimate a monthly payment before you start looking.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <form class="form" id="calc">
+        <div class="field"><label for="c-price">Home price ($)</label><input id="c-price" type="number" min="0" step="1000" value="900000" inputmode="numeric" /></div>
+        <div class="field"><label for="c-down">Down payment ($)</label><input id="c-down" type="number" min="0" step="1000" value="180000" inputmode="numeric" /></div>
+        <div class="row">
+          <div class="field"><label for="c-rate">Interest rate (%)</label><input id="c-rate" type="number" min="0" step="0.01" value="4.5" inputmode="decimal" /></div>
+          <div class="field"><label for="c-years">Amortization (years)</label><input id="c-years" type="number" min="1" max="35" value="25" inputmode="numeric" /></div>
+        </div>
+      </form>
+      <div>
+        <h2>Estimated monthly payment</h2>
+        <p class="calc-out" id="c-out" aria-live="polite"></p>
+        <p id="c-detail"></p>
+        <p class="fine">An estimate of principal and interest only, using Canadian semi-annual compounding. It leaves out property tax, condo fees, mortgage default insurance and closing costs. Ask your lender or mortgage broker for exact figures.</p>
+        <div class="actions"><a class="btn" href="/buy/">Start my home search</a></div>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (() => {
+      const $ = (id) => document.getElementById(id);
+      const money = (n) => n.toLocaleString('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 });
+      const run = () => {
+        const price = +$('c-price').value || 0;
+        const down = +$('c-down').value || 0;
+        const rate = (+$('c-rate').value || 0) / 100;
+        const n = (+$('c-years').value || 0) * 12;
+        const loan = Math.max(price - down, 0);
+        if (!loan || !n) { $('c-out').textContent = money(0); $('c-detail').textContent = ''; return; }
+        // Canadian fixed mortgages compound semi-annually.
+        const m = Math.pow(1 + rate / 2, 1 / 6) - 1;
+        const pay = m === 0 ? loan / n : (loan * m) / (1 - Math.pow(1 + m, -n));
+        $('c-out').textContent = money(pay);
+        $('c-detail').textContent = 'On a mortgage of ' + money(loan) + '.';
+      };
+      $('calc').addEventListener('input', run);
+      run();
+    })();
+  </script>
+</Base>

@@ -1,0 +1,157 @@
+---
+import '../styles/global.css';
+import { site, nav } from '../site';
+
+interface Props { title: string; description: string; }
+const { title, description } = Astro.props;
+const path = Astro.url.pathname;
+const fullTitle = `${title} | ${site.name}`;
+const canonical = new URL(path, site.url).href;
+const year = new Date().getFullYear();
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateAgent',
+  name: site.name,
+  url: site.url,
+  telephone: site.phone,
+  email: site.email,
+  areaServed: 'Ontario, Canada',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.brokerage.street,
+    addressLocality: 'Mississauga',
+    addressRegion: 'ON',
+    postalCode: 'L5W 1Z3',
+    addressCountry: 'CA',
+  },
+  parentOrganization: { '@type': 'Organization', name: site.brokerage.name },
+};
+---
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-head">
+      <div class="wrap">
+        <a class="brand" href="/">Team <span>Jabbar</span></a>
+        <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+        <nav class="site-nav" id="site-nav" aria-label="Main">
+          <ul>
+            {nav.map((n) => (
+              <li><a href={n.href} aria-current={path === n.href ? 'page' : undefined}>{n.label}</a></li>
+            ))}
+            <li><a class="call" href={site.phoneHref}>Call {site.phone}</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main"><slot /></main>
+
+    <footer class="site-foot">
+      <div class="wrap">
+        <div class="foot-grid">
+          <div>
+            <p class="brokerage-name">{site.brokerage.name}</p>
+            <p>{site.brokerage.note}</p>
+            <p>
+              {site.brokerage.street}<br />
+              {site.brokerage.city}
+            </p>
+          </div>
+          <div>
+            <h2>Reach the team</h2>
+            <ul>
+              <li>Direct: <a href={site.phoneHref}>{site.phone}</a></li>
+              <li>Office: <a href={site.brokerage.officeHref}>{site.brokerage.office}</a></li>
+              <li>Fax: {site.brokerage.fax}</li>
+              <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+              <li><a href={site.social.facebook} rel="noopener">Facebook</a> and <a href={site.social.instagram} rel="noopener">Instagram</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2>On this site</h2>
+            <ul>
+              <li><a href="/home-evaluation/">Free home evaluation</a></li>
+              {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+              <li><a href="/mortgage-calculator/">Mortgage calculator</a></li>
+              <li><a href="/privacy/">Privacy policy</a></li>
+              <li><a href="https://www.reco.on.ca/reco-information-guide" rel="noopener">RECO Information Guide</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="legal">
+          <p>
+            The trademarks REALTOR®, REALTORS® and the REALTOR® logo are controlled by The Canadian Real Estate
+            Association (CREA) and identify real estate professionals who are members of CREA. The trademarks MLS®,
+            Multiple Listing Service® and the associated logos are owned by CREA and identify the quality of services
+            provided by real estate professionals who are members of CREA.
+          </p>
+          <p>
+            Information on this website is believed to be accurate but is not guaranteed and should be independently
+            verified. It is not intended to replace professional real estate, financial or legal advice. Not intended
+            to solicit buyers or sellers currently under contract with a brokerage.
+          </p>
+          <p>© {year} {site.name}. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      (() => {
+        const btn = document.querySelector('.nav-toggle');
+        const nav = document.getElementById('site-nav');
+        btn?.addEventListener('click', () => {
+          const open = nav.classList.toggle('open');
+          btn.setAttribute('aria-expanded', String(open));
+        });
+
+        document.querySelectorAll('form[data-lead]').forEach((form) => {
+          const status = form.querySelector('.form-status');
+          const button = form.querySelector('button[type=submit]');
+          const label = button.textContent;
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            status.textContent = '';
+            status.removeAttribute('data-state');
+            button.disabled = true;
+            button.textContent = 'Sending';
+            try {
+              const res = await fetch('/api/lead', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Object.fromEntries(new FormData(form))),
+              });
+              if (!res.ok) throw new Error();
+              form.reset();
+              status.textContent = form.dataset.success;
+            } catch {
+              status.dataset.state = 'error';
+              status.textContent = "This didn't send. Call or text us at " + form.dataset.phone + ' and we will take it from there.';
+            }
+            button.disabled = false;
+            button.textContent = label;
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

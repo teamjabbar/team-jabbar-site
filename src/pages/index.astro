@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site, team, regions } from '../site';
+---
+<Base title="Real estate across the GTA and Ontario" description="Team Jabbar is a father and two sons selling and finding homes across the Greater Toronto Area and Ontario. Get a free home evaluation or start your search.">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>Realtors to move you forward.</h1>
+        <p class="lede">A father and his two sons, all licensed, helping families buy and sell homes across Ontario.</p>
+        <div class="actions">
+          <a class="btn btn-gold" href="/home-evaluation/">Get my home's value</a>
+          <a class="btn btn-line" href="/buy/">Find a home</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <img src={site.images.team} alt="Abdul-Jabbar Anjum with his sons Ali and Umer Jabbar" width="725" height="500" />
+      </div>
+    </div>
+  </section>
+
+  <section class="route" aria-label="Where we work">
+    <div class="wrap">
+      <p>Based in Mississauga. We work the whole Greater Toronto Area and travel for clients across the province.</p>
+      <ol>
+        {regions.map((r) => <li class={r === 'Greater Toronto Area' ? 'home' : undefined}>{r}</li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="doors">
+    <div class="door door-buy">
+      <h2>Buying a home</h2>
+      <p>Tell us where you want to live and what you can spend. We send you homes that fit, book the showings, and negotiate the offer.</p>
+      <a class="btn" href="/buy/">Start my search</a>
+    </div>
+    <div class="door door-sell">
+      <h2>Selling a home</h2>
+      <p>We price your home from recent sales on your street, prepare it for market, and handle every offer until it closes.</p>
+      <a class="btn" href="/sell/">Plan my sale</a>
+    </div>
+  </section>
+
+  <section class="band band-dark" id="evaluation">
+    <div class="wrap split">
+      <div>
+        <h2>What is your home worth today?</h2>
+        <p class="lede">Send us your address. One of us will look at what has sold near you and send back a written evaluation, free and with no obligation.</p>
+        <ul class="plain-list">
+          <li><strong>Prepared by a person</strong>We review recent sales near you ourselves. This is not an automated estimate.</li>
+          <li><strong>Yours to keep</strong>Use it to plan a sale, a refinance, or just to know where you stand.</li>
+        </ul>
+      </div>
+      <LeadForm type="seller" heading="Request a free home evaluation" button="Request my evaluation" success="Request received. One of us will be in touch with your evaluation." />
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <h2>Three licensed agents, one family</h2>
+      <p class="lede">When you call, you reach one of us. No call centre, no handoffs to strangers.</p>
+      <div class="people">
+        {team.map((p) => (
+          <div class="person">
+            {p.photo
+              ? <img src={p.photo} alt={p.name} width="400" height="400" loading="lazy" />
+              : <div class="no-photo" aria-hidden="true">{p.name[0]}</div>}
+            <h3>{p.name}</h3>
+            <p class="role">{p.role}</p>
+            {p.bio && <p>{p.bio}</p>}
+          </div>
+        ))}
+      </div>
+      <div class="actions"><a class="btn btn-line" href="/about/">About the team</a></div>
+    </div>
+  </section>
+
+  <section class="band band-pale">
+    <div class="wrap split">
+      <div>
+        <h2>New condos and developments, before the public launch</h2>
+        <p>Builders send us floor plans and price lists for upcoming projects before they open to the public. Join the list and we forward the ones that match what you want.</p>
+        <div class="actions"><a class="btn btn-line" href="/pre-construction/">How pre-construction works</a></div>
+      </div>
+      <LeadForm type="preconstruction" heading="Join the pre-construction list" button="Add me to the list" success="You're on the list. We'll email you when a matching project comes in." />
+    </div>
+  </section>
+</Base>

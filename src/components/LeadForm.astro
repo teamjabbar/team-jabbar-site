@@ -1,0 +1,114 @@
+---
+import { site } from '../site';
+
+interface Props {
+  type: 'seller' | 'buyer' | 'preconstruction' | 'alerts' | 'contact';
+  heading: string;
+  button: string;
+  success: string;
+}
+const { type, heading, button, success } = Astro.props;
+const id = `f-${type}`;
+---
+<form class="form" data-lead data-success={success} data-phone={site.phone} novalidate={false}>
+  <h3>{heading}</h3>
+  <input type="hidden" name="type" value={type} />
+  <div class="hp" aria-hidden="true">
+    <label>Leave this empty <input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for={`${id}-name`}>Name</label>
+      <input id={`${id}-name`} name="name" autocomplete="name" required />
+    </div>
+    <div class="field">
+      <label for={`${id}-phone`}>Phone</label>
+      <input id={`${id}-phone`} name="phone" type="tel" autocomplete="tel" required={type === 'seller'} />
+    </div>
+  </div>
+  <div class="field">
+    <label for={`${id}-email`}>Email</label>
+    <input id={`${id}-email`} name="email" type="email" autocomplete="email" required />
+  </div>
+
+  {type === 'seller' && (
+    <>
+      <div class="field">
+        <label for={`${id}-address`}>Property address</label>
+        <input id={`${id}-address`} name="address" autocomplete="street-address" required />
+      </div>
+      <div class="field">
+        <label for={`${id}-timeline`}>When are you thinking of selling?</label>
+        <select id={`${id}-timeline`} name="timeline">
+          <option>Within 3 months</option>
+          <option>3 to 6 months</option>
+          <option>6 to 12 months</option>
+          <option>Just curious about the value</option>
+        </select>
+      </div>
+    </>
+  )}
+
+  {(type === 'buyer' || type === 'alerts') && (
+    <>
+      <div class="field">
+        <label for={`${id}-area`}>Where are you looking?</label>
+        <input id={`${id}-area`} name="area" placeholder="City or neighbourhood" required />
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for={`${id}-budget`}>Budget</label>
+          <select id={`${id}-budget`} name="budget">
+            <option>Under $600,000</option>
+            <option>$600,000 to $900,000</option>
+            <option>$900,000 to $1.3M</option>
+            <option>$1.3M to $2M</option>
+            <option>Over $2M</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for={`${id}-kind`}>Home type</label>
+          <select id={`${id}-kind`} name="home_type">
+            <option>Detached</option>
+            <option>Semi or townhouse</option>
+            <option>Condo</option>
+            <option>Investment property</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+      </div>
+    </>
+  )}
+
+  {type === 'preconstruction' && (
+    <div class="field">
+      <label for={`${id}-interest`}>What are you looking for?</label>
+      <select id={`${id}-interest`} name="home_type">
+        <option>Condo</option>
+        <option>Townhouse</option>
+        <option>Detached home</option>
+        <option>Investment unit</option>
+        <option>Open to anything</option>
+      </select>
+    </div>
+  )}
+
+  {type === 'contact' && (
+    <div class="field">
+      <label for={`${id}-message`}>How can we help?</label>
+      <textarea id={`${id}-message`} name="message" required></textarea>
+    </div>
+  )}
+
+  <label class="consent">
+    <input type="checkbox" name="consent" value="yes" />
+    <span>
+      Email me market updates, new listings and new projects from {site.name}, {site.brokerage.name}.
+      Unsubscribe any time.
+    </span>
+  </label>
+
+  <button class="btn" type="submit">{button}</button>
+  <p class="form-status" role="status" aria-live="polite"></p>
+</form>

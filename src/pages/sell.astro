@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+---
+<Base title="Sell your home in the GTA and Ontario" description="Team Jabbar prices your home from recent nearby sales, prepares it for market and negotiates every offer. Start with a free home evaluation.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Sell your home with us</h1>
+      <p class="lede">It starts with knowing what your home is worth. The evaluation is free.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <h2>How selling works</h2>
+        <ol class="steps" style="grid-template-columns:1fr">
+          <li><h3>Free evaluation</h3><p>We look at what has sold near you and give you a price range in writing.</p></li>
+          <li><h3>Prepare and price</h3><p>We agree on a price and a plan, and tell you which fixes are worth doing and which are not.</p></li>
+          <li><h3>Go to market</h3><p>Your home is listed on MLS® and marketed to buyers and to other agents.</p></li>
+          <li><h3>Offers to closing</h3><p>We bring you every offer, negotiate the terms, and manage the paperwork until the keys change hands.</p></li>
+        </ol>
+      </div>
+      <LeadForm type="seller" heading="Request a free home evaluation" button="Request my evaluation" success="Request received. One of us will be in touch with your evaluation." />
+    </div>
+  </section>
+</Base>

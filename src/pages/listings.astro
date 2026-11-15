@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site } from '../site';
+---
+<Base title="Listings and listing alerts" description="Search MLS listings across Ontario or have Team Jabbar email you new homes in your area as soon as they are listed.">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Find your next home</h1>
+      <p class="lede">Search the MLS® yourself, or have new listings in your area emailed to you.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <h2>Search every listing</h2>
+        <p>Browse homes for sale and for lease across Ontario on our MLS® search, with a map, filters and photos.</p>
+        <div class="actions"><a class="btn" href={site.listingsSearchUrl} rel="noopener">Open the MLS® search</a></div>
+
+        <h2 style="margin-top:3.5rem">Or let the listings come to you</h2>
+        <p>Tell us the area, budget and home type. We email you new listings that match as soon as they come on the market.</p>
+      </div>
+      <LeadForm type="alerts" heading="Email me new listings" button="Start my listing alerts" success="Alerts are set. We'll email you new listings that match." />
+    </div>
+  </section>
+</Base>
