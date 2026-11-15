@@ -27,8 +27,6 @@ export const site = {
     team: 'https://ik.imagekit.io/remarketer/media/3759-20230124045130.png',
     logo: '/images/logo.png',
     logoWhite: '/images/logo-white.png',
-    // Aerial neighbourhood photo behind the lead forms (Unsplash, free licence)
-    hero: 'https://images.unsplash.com/photo-1637123433690-228bb002d9e9?w=2400&q=80',
   },
 };
 

@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
 import { site, nav } from '../site';
-import { asset } from '../assets';
 
 interface Props { title: string; description: string; article?: boolean; }
 const { title, description, article = false } = Astro.props;
@@ -9,7 +8,6 @@ const path = Astro.url.pathname;
 const fullTitle = `${title} | ${site.name}`;
 const canonical = new URL(path, site.url).href;
 const year = new Date().getFullYear();
-const heroImg = asset(site.images.hero)!.src;
 
 const schema = {
   '@context': 'https://schema.org',
@@ -48,7 +46,6 @@ const schema = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
-    <style set:html={`:root{--hero-img:url("${heroImg}")}`}></style>
     <slot name="head" />
   </head>
   <body>

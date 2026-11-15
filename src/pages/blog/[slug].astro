@@ -26,7 +26,7 @@ const schema = {
 ---
 <Base title={post.data.title} description={post.data.description} article>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(schema)} />
-  <section class="page-head">
+  <section class="page-head pattern">
     <div class="wrap">
       <p class="meta"><a href="/blog/">Advice</a> / {post.data.category}</p>
       <h1 style="max-width:22ch;margin-top:0.4em">{post.data.title}</h1>

@@ -7,7 +7,7 @@ import { sellSteps } from '../quizzes';
 const posts = (await getCollection('blog')).filter((p) => p.data.category === 'Selling').sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 <Base title="Sell your home in the GTA and Ontario" description="Find out what your Ontario home is worth. Answer a few questions and a licensed Team Jabbar agent sends a free written evaluation.">
-  <section class="hero">
+  <section class="hero pattern">
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1>What is your home worth today?</h1>

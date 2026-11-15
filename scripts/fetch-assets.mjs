@@ -22,7 +22,7 @@ for (const file of await readdir(SRC)) {
 }
 
 // Team photos and the hero photo listed in src/site.ts
-for (const m of (await readFile('src/site.ts', 'utf8')).matchAll(/https:\/\/(?:ik\.imagekit\.io|images\.unsplash\.com)\/[^\s"'\],]+/g)) urls.add(m[0]);
+for (const m of (await readFile('src/site.ts', 'utf8')).matchAll(/https:\/\/(?:ik\.imagekit\.io)\/[^\s"'\],]+/g)) urls.add(m[0]);
 
 await mkdir(OUT, { recursive: true });
 const manifest = {};

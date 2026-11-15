@@ -7,7 +7,7 @@ import { buySteps } from '../quizzes';
 const posts = (await getCollection('blog')).filter((p) => p.data.category === 'Buying').sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 <Base title="Buy a home in the GTA and Ontario" description="Tell Team Jabbar the home type, area, size and budget you want. We email matching listings, book showings and negotiate your offer.">
-  <section class="hero">
+  <section class="hero pattern">
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1>Tell us the home you want. We find it.</h1>

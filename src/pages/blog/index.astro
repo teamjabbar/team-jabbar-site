@@ -4,7 +4,7 @@ import Base from '../../layouts/Base.astro';
 const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 <Base title="Advice for Ontario home buyers and sellers" description="Practical articles from Team Jabbar on preparing a home for sale, what to watch for when selling, and what to check before you buy in Ontario.">
-  <section class="page-head">
+  <section class="page-head pattern">
     <div class="wrap">
       <h1>Advice for buyers and sellers</h1>
       <p class="lede">What to do, what to check and what to avoid, written for Ontario.</p>
