@@ -35,7 +35,12 @@ export const team = [
     name: 'Abdul-Jabbar Anjum',
     role: 'Real Estate Agent, Team Lead',
     photo: 'https://ik.imagekit.io/remarketer/media/3759-20230123225913.jpg',
-    bio: 'With over 20 years in Ontario real estate, Abdul leads the team. Clients know him for his market knowledge, his negotiating, and his kindness.',
+    bio: 'An engineer by education who made real estate his profession in 2007. Abdul leads the team, and clients know him for his market knowledge, his negotiating and his kindness.',
+    story: [
+      'Abdul was educated as an engineer, but real estate was always his passion. In 2007 he made it his profession, and it has been his sole focus ever since.',
+      'He brings an engineer\'s habits to every sale and purchase. He studies the numbers, checks the details, and tells you plainly what a home is worth and why. Nearly two decades of buying and selling across Ontario have given him a deep knowledge of the market and a calm, firm hand at the negotiating table.',
+      'As a father and the head of Team Jabbar, he treats every client\'s move the way he would treat his own family\'s: with patience, honesty and care.',
+    ],
   },
   {
     name: 'Ali Jabbar',

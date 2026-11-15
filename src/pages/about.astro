@@ -14,8 +14,17 @@ import { asset } from '../assets';
   <section class="band">
     <div class="wrap">
       <p class="lede">We are Team Jabbar, with {site.brokerage.name} in Mississauga. Our aim is simple: a real estate experience without the hassle.</p>
-      <div class="people">
-        {team.map((p) => (
+      <div class="lead-bio">
+        <img src={asset(team[0].photo)!.src} alt={team[0].name} width="400" height="400" />
+        <div>
+          <h2>{team[0].name}</h2>
+          <p class="role">{team[0].role}</p>
+          {(team[0].story ?? [team[0].bio]).map((para) => <p>{para}</p>)}
+          <div class="actions"><a class="btn" href="/contact/">Talk to Abdul</a></div>
+        </div>
+      </div>
+      <div class="people" style="grid-template-columns:repeat(auto-fit,minmax(14rem,20rem));margin-top:3rem">
+        {team.slice(1).map((p) => (
           <div class="person">
             {p.photo
               ? <img src={asset(p.photo)!.src} alt={p.name} width="400" height="400" loading="lazy" />

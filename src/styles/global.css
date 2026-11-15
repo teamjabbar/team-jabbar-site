@@ -357,6 +357,12 @@ input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .band-dark .steps p { color: #cfc9b8; }
 
 /* Team */
+.lead-bio { display: grid; grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: start; margin-top: 2.5rem; }
+.lead-bio img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--r-lg); }
+.lead-bio h2 { margin-bottom: 0.2rem; }
+.lead-bio .role { color: var(--gold-deep); font-weight: 600; margin-bottom: 1.25rem; }
+.lead-bio p { font-size: 1.1rem; line-height: 1.65; }
+@media (max-width: 46rem) { .lead-bio { grid-template-columns: 1fr; } .lead-bio img { max-width: 18rem; } }
 .people { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
 .person img, .person .no-photo { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--coal); border-radius: var(--r-lg); }
 .person .no-photo { display: grid; place-items: center; font-family: var(--display); font-size: 4rem; color: var(--gold); }
