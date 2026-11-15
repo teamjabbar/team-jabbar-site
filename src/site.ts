@@ -35,7 +35,7 @@ export const team = [
     name: 'Abdul-Jabbar Anjum',
     role: 'Real Estate Agent, Team Lead',
     photo: 'https://ik.imagekit.io/remarketer/media/3759-20230123225913.jpg',
-    bio: 'With over 15 years in Ontario real estate, Abdul leads the team. Clients know him for his market knowledge, his negotiating, and his kindness.',
+    bio: 'With over 20 years in Ontario real estate, Abdul leads the team. Clients know him for his market knowledge, his negotiating, and his kindness.',
   },
   {
     name: 'Ali Jabbar',
