@@ -12,7 +12,7 @@ Astro site for teamjabbar.com, hosted on Cloudflare Pages.
 - `src/site.ts`: phone, email, brokerage, team bios and photos. Edit here and every page updates.
 - `src/pages/`: one file per page.
 - `src/components/LeadForm.astro`: the form used on every page.
-- `functions/api/lead.js`: sends form submissions to MailerLite. The variables it needs are listed at the top of that file.
+- `functions/api/lead.js`: sends form submissions to MailerLite. It needs one Cloudflare secret, `MAILERLITE_API_KEY`. Never put the key in this repo.
 - `public/images/`: put the logo, team photo and headshots here, then update the paths in `src/site.ts`.
 
 ## Run locally
