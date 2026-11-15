@@ -14,8 +14,8 @@ const mono = d.name.split(/\s+/).slice(0, 2).map((w: string) => w[0]).join('').t
     <p class="project-where">{d.area ? `${d.area}, ${d.city}` : d.city} · by {d.builder}</p>
     <ul class="project-facts">
       {d.homeTypes.map((t: string) => <li>{t}</li>)}
-      {d.priceFrom && <li>From the {d.priceFrom}</li>}
-      {d.occupancy && <li>Occupancy {d.occupancy}</li>}
+      {d.priceFrom && <li>From {d.priceFrom}</li>}
+      {d.occupancy && <li>{/^\d/.test(d.occupancy) ? `Occupancy ${d.occupancy}` : d.occupancy}</li>}
     </ul>
     <span class="more">See details and get floor plans</span>
   </div>

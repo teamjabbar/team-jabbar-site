@@ -241,6 +241,7 @@ input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .post-card .more { margin-top: auto; font-weight: 600; color: var(--gold-deep); font-size: 0.95rem; }
 
 .article-grid { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+.article-grid > * { min-width: 0; }
 .article-side { position: sticky; top: 6rem; }
 @media (max-width: 60rem) { .article-grid { grid-template-columns: 1fr; } .article-side { position: static; } }
 .prose { max-width: 44rem; font-size: 1.1rem; line-height: 1.7; }
@@ -248,7 +249,7 @@ input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius
 .prose p, .prose ul, .prose ol { max-width: none; margin: 0 0 1.1em; }
 .prose ul, .prose ol { padding-left: 1.3rem; }
 .prose li { margin-bottom: 0.45rem; }
-.prose table { width: 100%; border-collapse: collapse; margin: 0 0 1.4em; font-size: 1rem; }
+.prose table { display: block; overflow-x: auto; width: 100%; border-collapse: collapse; margin: 0 0 1.4em; font-size: 1rem; }
 .prose th, .prose td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--line); }
 .prose th { background: var(--paper); font-weight: 600; }
 .takeaways { background: var(--gold-pale); border-radius: var(--r-lg); padding: 1.4rem 1.6rem; margin: 0 0 2rem; }

@@ -23,8 +23,8 @@ const projects = defineCollection({
     area: z.string().optional(), // neighbourhood or intersection
     homeTypes: z.array(z.enum(['Condo', 'Townhouse', 'Semi-detached', 'Detached'])),
     status: z.enum(['Coming soon', 'Now selling', 'Under construction']),
-    priceFrom: z.string().optional(), // e.g. "$500s"
-    occupancy: z.string().optional(), // e.g. "2029"
+    priceFrom: z.string().optional(), // e.g. "$525,400"
+    occupancy: z.string().optional(), // e.g. "2029" or "Select homes ready now"
     deposit: z.string().optional(),
     summary: z.string(),
     highlights: z.array(z.string()).default([]),
