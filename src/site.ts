@@ -40,13 +40,13 @@ export const team = [
   {
     name: 'Ali Jabbar',
     role: 'Real Estate Agent',
-    photo: '',
+    photo: '/images/ali-jabbar.jpg',
     bio: '',
   },
   {
     name: 'Umer Jabbar',
     role: 'Real Estate Agent',
-    photo: '',
+    photo: '/images/umer-jabbar.jpg',
     bio: '',
   },
 ];
