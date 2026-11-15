@@ -4,3 +4,5 @@ dist
 .env
 .dev.vars
 .wrangler
+public/assets/p/
+src/asset-manifest.json

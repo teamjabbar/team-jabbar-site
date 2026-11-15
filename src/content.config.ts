@@ -28,7 +28,24 @@ const projects = defineCollection({
     deposit: z.string().optional(),
     summary: z.string(),
     highlights: z.array(z.string()).default([]),
-    image: z.string().optional(), // file in /public/images/projects/
+    image: z.string().optional(), // main picture: a web address or a file in /public
+    photos: z.array(z.string()).default([]),
+    sitePlan: z.string().optional(),
+    models: z
+      .array(
+        z.object({
+          name: z.string(),
+          kind: z.enum(['Condo', 'Townhouse', 'Semi-detached', 'Detached']),
+          beds: z.string().optional(),
+          baths: z.string().optional(),
+          size: z.string().optional(),
+          price: z.string().optional(),
+          note: z.string().optional(),
+          image: z.string().optional(),
+          plans: z.array(z.string()).default([]),
+        }),
+      )
+      .default([]),
     imageCredit: z.string().optional(),
     updated: z.coerce.date(),
     // true = hidden from the live site

@@ -1,12 +1,14 @@
 ---
+import { asset } from '../assets';
 interface Props { project: any }
 const { project } = Astro.props;
 const d = project.data;
+const pic = asset(d.image);
 const mono = d.name.split(/\s+/).slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 ---
 <a class="project-card" href={`/pre-construction/${project.id}/`} data-city={d.city} data-types={d.homeTypes.join('|')} data-status={d.status}>
   <div class="project-pic">
-    {d.image ? <img src={d.image} alt="" loading="lazy" /> : <span class="mono" aria-hidden="true">{mono}</span>}
+    {pic ? <img src={pic.src} width={pic.w} height={pic.h} alt="" loading="lazy" /> : <span class="mono" aria-hidden="true">{mono}</span>}
     <span class="status">{d.status}</span>
   </div>
   <div class="project-body">

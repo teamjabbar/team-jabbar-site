@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import LeadForm from '../../components/LeadForm.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { liveProjects } from '../../projects';
+import { asset } from '../../assets';
 import { site } from '../../site';
 
 export async function getStaticPaths() {
@@ -17,6 +18,11 @@ const where = d.area ? `${d.area}, ${d.city}` : d.city;
 const mono = d.name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 const others = (await liveProjects()).filter((p) => p.id !== project.id).slice(0, 3);
 const updated = d.updated.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+const hero = asset(d.image);
+const photos = d.photos.map((p) => asset(p)!);
+const sitePlan = asset(d.sitePlan);
+const kinds = [...new Set(d.models.map((m) => m.kind))];
+const hasPlans = d.models.some((m) => m.plans.length > 0);
 ---
 <Base title={`${d.name} by ${d.builder}, ${d.city}`} description={d.summary}>
   <section class="page-head" style="padding-block:2rem 2.25rem">
@@ -31,9 +37,14 @@ const updated = d.updated.toLocaleDateString('en-CA', { year: 'numeric', month: 
     <div class="wrap article-grid">
       <div>
         <div class="project-pic project-hero">
-          {d.image ? <img src={d.image} alt={`${d.name} by ${d.builder}`} /> : <span class="mono" aria-hidden="true">{mono}</span>}
+          {hero ? <img src={hero.src} width={hero.w} height={hero.h} alt={`${d.name} by ${d.builder}`} /> : <span class="mono" aria-hidden="true">{mono}</span>}
         </div>
-        {d.imageCredit && <p class="fine" style="margin-top:-1.4rem">Image: {d.imageCredit}</p>}
+        {photos.length > 0 && (
+          <div class="photo-strip">
+            {photos.map((p) => <button type="button" class="zoom" data-zoom={JSON.stringify([p.src])} data-title={d.name}><img src={p.src} width={p.w} height={p.h} alt={`${d.name} photo`} loading="lazy" /></button>)}
+          </div>
+        )}
+        {hero && <p class="fine">Images and renderings courtesy of {d.builder}. Renderings are artist's concepts.</p>}
 
         <p class="lede" style="color:var(--ink)">{d.summary}</p>
 
@@ -53,11 +64,51 @@ const updated = d.updated.toLocaleDateString('en-CA', { year: 'numeric', month: 
             <ul>{d.highlights.map((h) => <li>{h}</li>)}</ul>
           </div>
         )}
+
+        {d.models.length > 0 && (
+          <div class="models" id="homes">
+            <h2>{hasPlans ? 'Homes and floor plans' : 'Homes available'}</h2>
+            {kinds.map((kind) => (
+              <>
+                {kinds.length > 1 && <h3 class="model-kind">{kind === 'Townhouse' ? 'Townhomes' : `${kind} homes`}</h3>}
+                <ul class="model-grid">
+                  {d.models.filter((m) => m.kind === kind).map((m) => {
+                    const pic = asset(m.image);
+                    const plans = m.plans.map((p) => asset(p)!.src);
+                    return (
+                      <li class="model">
+                        {pic && <img src={pic.src} width={pic.w} height={pic.h} alt={`${m.name} exterior`} loading="lazy" />}
+                        <div class="model-body">
+                          <h4>{m.name}</h4>
+                          <p class="model-facts">{[m.beds && `${m.beds} bed`, m.baths && `${m.baths} bath`, m.size].filter(Boolean).join(' · ')}</p>
+                          {m.note && <p class="model-facts">{m.note}</p>}
+                          {m.price && <p class="model-price">From {m.price}</p>}
+                          <div class="model-actions">
+                            {plans.length > 0 && <button type="button" class="zoom link" data-zoom={JSON.stringify(plans)} data-title={`${m.name} floor plan`}>View floor plan</button>}
+                            <a href="#start" data-ask={m.name}>Ask about this home</a>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            ))}
+          </div>
+        )}
+
+        {sitePlan && (
+          <div class="models">
+            <h2>Site plan</h2>
+            <button type="button" class="zoom site-plan" data-zoom={JSON.stringify([sitePlan.src])} data-title={`${d.name} site plan`}><img src={sitePlan.src} width={sitePlan.w} height={sitePlan.h} alt={`${d.name} site plan`} loading="lazy" /></button>
+          </div>
+        )}
+
         <div class="prose"><Content /></div>
 
         <p class="fine" style="margin-top:2rem">
-          Details last checked {updated}. Prices, plans, deposits and dates are set by the builder and can change without
-          notice. E. &amp; O.E. {site.name}, {site.brokerage.name}, is not the builder of this project.
+          Details last checked {updated}. Prices, plans, sizes, deposits and dates are set by the builder and can change
+          without notice. E. &amp; O.E. {site.name}, {site.brokerage.name}, is not the builder of this project.
         </p>
       </div>
 
@@ -76,4 +127,36 @@ const updated = d.updated.toLocaleDateString('en-CA', { year: 'numeric', month: 
       </div>
     </section>
   )}
+
+  <dialog class="viewer" id="viewer" aria-labelledby="viewer-title">
+    <div class="viewer-bar"><p id="viewer-title"></p><button type="button" id="viewer-close" class="btn btn-line">Close</button></div>
+    <div class="viewer-body" id="viewer-body"></div>
+  </dialog>
+
+  <script is:inline>
+    (() => {
+      const viewer = document.getElementById('viewer');
+      const body = document.getElementById('viewer-body');
+      document.querySelectorAll('.zoom').forEach((btn) => btn.addEventListener('click', () => {
+        document.getElementById('viewer-title').textContent = btn.dataset.title;
+        body.replaceChildren(...JSON.parse(btn.dataset.zoom).map((src) => Object.assign(new Image(), { src, alt: btn.dataset.title })));
+        viewer.showModal();
+      }));
+      document.getElementById('viewer-close').addEventListener('click', () => viewer.close());
+      viewer.addEventListener('click', (e) => { if (e.target === viewer) viewer.close(); });
+
+      // "Ask about this home" carries the model name into the form
+      const form = document.querySelector('#start form');
+      const project = form.querySelector('input[name=project]');
+      const base = project.value;
+      const heading = form.querySelector('h3');
+      const original = heading.textContent;
+      document.querySelectorAll('[data-ask]').forEach((a) => a.addEventListener('click', () => {
+        project.value = base + ' / ' + a.dataset.ask;
+        heading.textContent = 'Ask about the ' + a.dataset.ask.replace(/^The /, '') + ' at ' + base;
+        setTimeout(() => form.querySelector('input[name=name]').focus({ preventScroll: true }), 400);
+      }));
+      form.addEventListener('reset', () => { setTimeout(() => { project.value = base; heading.textContent = original; }); });
+    })();
+  </script>
 </Base>
