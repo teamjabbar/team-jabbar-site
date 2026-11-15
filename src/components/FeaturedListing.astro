@@ -1,0 +1,34 @@
+---
+import { asset } from '../assets';
+interface Props { listing: any }
+const { listing } = Astro.props;
+const d = listing.data;
+const main = asset(d.photos[0]?.src);
+const thumbs = d.photos.slice(1, 4).map((p: any) => ({ ...asset(p.src)!, caption: p.caption }));
+const pdf = `/brochures/${listing.id}.pdf`;
+---
+<article class="listing">
+  <div class="listing-media">
+    {main && <img class="listing-main" src={main.src} width={main.w} height={main.h} alt={`${d.address}, ${d.city}`} loading="lazy" />}
+    <span class="status">{d.status}</span>
+    <div class="listing-thumbs">
+      {thumbs.map((t: any) => <img src={t.src} width={t.w} height={t.h} alt={t.caption} loading="lazy" />)}
+    </div>
+  </div>
+  <div class="listing-body">
+    <p class="listing-price">{d.price}</p>
+    <h3>{d.address}</h3>
+    <p class="listing-where">{d.city} ({d.community}), Ontario</p>
+    <ul class="listing-facts">
+      <li><strong>{d.beds}</strong>Bedrooms</li>
+      <li><strong>{d.baths}</strong>Washrooms</li>
+      <li><strong>{d.size.replace(' sq ft', '')}</strong>Square feet</li>
+    </ul>
+    <p>{d.summary}</p>
+    <div class="actions">
+      <a class="btn" href={pdf} target="_blank" rel="noopener">View full listing</a>
+      <a class="btn btn-line" href="/contact/">Book a showing</a>
+    </div>
+    <p class="fine">Opens the brochure as a PDF. MLS® {d.mls}. Listed by {d.listedBy}.</p>
+  </div>
+</article>

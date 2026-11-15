@@ -10,15 +10,19 @@ const SRC = 'src/content/projects';
 const OUT = 'public/assets/p';
 const MANIFEST = 'src/asset-manifest.json';
 const UA = 'Mozilla/5.0 (compatible; TeamJabbarSiteBuild/1.0; +https://teamjabbar.com)';
+// Copies already saved in the repo are kept, so a picture survives even if its original address stops working.
+const previous = (await access(MANIFEST).then(() => true, () => false)) ? JSON.parse(await readFile(MANIFEST, 'utf8')) : {};
 
 const exists = (p) => access(p).then(() => true, () => false);
 
 const urls = new Set();
-for (const file of await readdir(SRC)) {
-  if (!file.endsWith('.md')) continue;
-  const front = (await readFile(path.join(SRC, file), 'utf8')).split(/^---$/m)[1] ?? '';
-  if (/^draft:\s*true/m.test(front)) continue;
-  for (const m of front.matchAll(/https?:\/\/[^\s"'\],]+/g)) urls.add(m[0]);
+for (const dir of [SRC, 'src/content/listings']) {
+  for (const file of (await exists(dir)) ? await readdir(dir) : []) {
+    if (!file.endsWith('.md')) continue;
+    const front = (await readFile(path.join(dir, file), 'utf8')).split(/^---$/m)[1] ?? '';
+    if (/^draft:\s*true/m.test(front)) continue;
+    for (const m of front.matchAll(/https?:\/\/[^\s"'\],}]+/g)) urls.add(m[0]);
+  }
 }
 
 // Team photos and the hero photo listed in src/site.ts
@@ -42,6 +46,7 @@ async function one(url) {
     manifest[url] = { src: '/assets/p/' + name, w: meta.width, h: meta.height };
     ok++;
   } catch (err) {
+    if (previous[url]) { manifest[url] = previous[url]; ok++; return; }
     failed++;
     console.warn('[assets] could not copy', url, '-', err.message);
   }

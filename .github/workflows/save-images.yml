@@ -1,0 +1,28 @@
+# Saves a copy of every builder and listing picture into the repository,
+# so the site keeps its pictures even if the original address stops working.
+name: Save images
+on:
+  push:
+    branches: [main]
+    paths: ['src/content/**', 'src/site.ts', 'scripts/fetch-assets.mjs']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: save-images
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/fetch-assets.mjs
+      - name: Commit new pictures
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/p src/asset-manifest.json
+          git diff --cached --quiet || (git commit -m "Save copies of builder and listing pictures" && git push)

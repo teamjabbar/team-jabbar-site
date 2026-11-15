@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import Quiz from '../components/Quiz.astro';
 import LeadForm from '../components/LeadForm.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import FeaturedListing from '../components/FeaturedListing.astro';
 import { liveProjects } from '../projects';
 import { site, team, regions } from '../site';
 import { asset } from '../assets';
@@ -11,6 +12,7 @@ import { homeSteps } from '../quizzes';
 
 const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const projects = await liveProjects();
+const listings = (await getCollection('listings')).filter((l) => !l.data.draft && (l.data.status === 'For sale' || l.data.status === 'For lease'));
 const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
 ---
 <Base title="Buy or sell a home in the GTA and Ontario" description="Tell Team Jabbar what you need in four quick questions. A licensed agent calls you with homes that fit, or a free evaluation of your home.">
@@ -58,6 +60,21 @@ const faces = [team[0].photo, team[1].photo, team[2].photo].filter(Boolean);
       </ul>
     </div>
   </section>
+
+  {listings.length > 0 && (
+    <section class="band" id="featured" style="padding-bottom:0">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>{listings.length > 1 ? 'Our featured listings' : 'Our featured listing'}</h2>
+            <p class="lede">Listed by Team Jabbar. Ask us for a private showing.</p>
+          </div>
+          <a class="btn btn-line" href="/listings/">Search all listings</a>
+        </div>
+        <div style="display:grid;gap:1.5rem">{listings.map((l) => <FeaturedListing listing={l} />)}</div>
+      </div>
+    </section>
+  )}
 
   <section class="band">
     <div class="wrap">

@@ -2,6 +2,9 @@
 import Base from '../layouts/Base.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site } from '../site';
+import { getCollection } from 'astro:content';
+import FeaturedListing from '../components/FeaturedListing.astro';
+const featured = (await getCollection('listings')).filter((l) => !l.data.draft && (l.data.status === 'For sale' || l.data.status === 'For lease'));
 ---
 <Base title="Listings and listing alerts" description="Search MLS listings across Ontario or have Team Jabbar email you new homes in your area as soon as they are listed.">
   <section class="page-head pattern">
@@ -10,6 +13,15 @@ import { site } from '../site';
       <p class="lede">Search the MLS® yourself, or have new listings in your area emailed to you.</p>
     </div>
   </section>
+
+  {featured.length > 0 && (
+    <section class="band band-pale">
+      <div class="wrap">
+        <div class="section-head"><h2>Listed by Team Jabbar</h2></div>
+        <div style="display:grid;gap:1.5rem">{featured.map((l) => <FeaturedListing listing={l} />)}</div>
+      </div>
+    </section>
+  )}
 
   <section class="band">
     <div class="wrap split">

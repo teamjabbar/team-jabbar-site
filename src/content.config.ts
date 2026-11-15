@@ -53,4 +53,32 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { blog, projects };
+const listings = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/listings' }),
+  schema: z.object({
+    address: z.string(),
+    city: z.string(),
+    community: z.string(),
+    postal: z.string(),
+    mls: z.string(),
+    status: z.enum(['For sale', 'For lease', 'Sold', 'Leased']),
+    price: z.string(),
+    beds: z.string(),
+    baths: z.string(),
+    size: z.string(),
+    lot: z.string().optional(),
+    taxes: z.string().optional(),
+    listedBy: z.string(),
+    summary: z.string(),
+    description: z.array(z.string()),
+    highlights: z.array(z.string()).default([]),
+    details: z.array(z.tuple([z.string(), z.string()])).default([]),
+    rooms: z.array(z.object({ level: z.string(), rooms: z.array(z.string()) })).default([]),
+    neighbourhood: z.object({ name: z.string(), text: z.array(z.string()) }),
+    photos: z.array(z.object({ src: z.string(), caption: z.string() })),
+    updated: z.coerce.date(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { blog, projects, listings };
